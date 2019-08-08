@@ -1,29 +1,46 @@
 Introduction
 ============
 
-Census is important.
+In the United States, the Decennial Census is an important part of
+democratic governance.  Every ten years, the US Census Bureau is
+consititutionally required to count the "whole number of persons in
+each State", and in 2020 this effort is likely to cost over fifteen
+billion dollars.  The results will be used for apportioning
+representation in the US House of Representatives, for dividing
+federal tax dollars between states, as well as for a multitude of
+other governmental activities at the national, state, and local level.
+Data from the decennial census will also be used extensively by
+sociologists, economists, demographers, and other researchers, and it
+will also inform strategic decisions in the private and non-profit
+sectors, and facilitate the accurate weighting of subsequent
+population surveys for the next decade.
 
-The 2020 US Census will use a new approach, Differential Privacy (DP),
-to protect respondent confidentiality; this approach is based on X
-years of computer science research, and affords the full disclosure of
-the method. Although this approach allows a more precise accounting of
-the noise introduced by the process, it also risks reducing the
-utility of census data if the new approach produces counts that are
-substantially noisier than the previous method. Differential Privacy
-is new and unknown. And also important, (1) participation is
-compulsory, including vulnerable populations, so privacy is paramount
-and also required by law; (2) democratic process relies on
-representation, and census is how we determine that, and also
-apportionment of public funds/services; (3) perception of privacy will
-reduce cost of running census. Past approach to DAS is swapping, and
-is security through obscurity, generally considered bad design in
-cryptography.
+The confidentiality of information in the decenial census is also
+constitutionally mandated, and the 2020 US Census will use a novel
+approach to "disclosure avoidance" to protect respondents' data. This
+approach builds on Differential Privacy (DP), a mathematical
+definition of privacy and privacy loss that has been developed over
+the last decade and a half in the theoretical computer science and
+cryptography communities. Although the new approach allows a more
+precise accounting of the noise introduced by the process, it also
+risks reducing the utility of census data---it may produce counts that
+are substantially noisier than the previous discloure avoidance
+system, which was based on a technique called swapping, and relied on
+the detailed of the swapping procedure being secret.
 
-To date, there is a lack of empirical examination of DP in census DAS.
-Code and theory is starting to emerge.[refs to census pubs, danah
-boyd's whitepaper]
+To date, there is a lack of empirical examination of DP in census DAS,
+but the approach was applied to the 2018 end-to-end test of the
+decennial census, and computer code used for this test as well as
+accompaning exposition has recently been released publicly by the
+Census Bureau.[refs to census pubs, danah boyd's whitepaper]
 
-We quantified the error and empirical privacy loss and compare it to
-the error and privacy of a more familiar sample-down algorithm.
+We used the recently released code, preprints, and data files to
+quantify the error introduced by the E2E disclosure avoidance system
+when Census Bureau used it to guarantee differential privacy for the
+1940 US Census (for which the full data has previously been released)
+at a range of privacy loss budgets.  We also developed an empirical
+measure of privacy loss and used it to compare the error and privacy
+of the DP approach to that of a simple-random-sampling approach to
+protecting privacy.
 
 
