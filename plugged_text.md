@@ -1,3 +1,49 @@
+Introduction
+============
+
+In the United States, the Decennial Census is an important part of
+democratic governance.  Every ten years, the US Census Bureau is
+consititutionally required to count the "whole number of persons in
+each State", and in 2020 this effort is likely to cost over fifteen
+billion dollars.[ref]  The results will be used for apportioning
+representation in the US House of Representatives, for dividing
+federal tax dollars between states, as well as for a multitude of
+other governmental activities at the national, state, and local level.
+Data from the decennial census will also be used extensively by
+sociologists, economists, demographers, and other researchers, and it
+will also inform strategic decisions in the private and non-profit
+sectors, and facilitate the accurate weighting of subsequent
+population surveys for the next decade.[ref]
+
+The confidentiality of information in the decenial census is also
+constitutionally mandated, and the 2020 US Census will use a novel
+approach to "disclosure avoidance" to protect respondents' data.[ref] This
+approach builds on Differential Privacy (DP), a mathematical
+definition of privacy and privacy loss that has been developed over
+the last decade and a half in the theoretical computer science and
+cryptography communities.[ref] Although the new approach allows a more
+precise accounting of the noise introduced by the process, it also
+risks reducing the utility of census data---it may produce counts that
+are substantially noisier than the previous discloure avoidance
+system, which was based on a technique called swapping, and relied on
+the detailed of the swapping procedure being secret.[ref]
+
+To date, there is a lack of empirical examination of DP in census DAS,
+but the approach was applied to the 2018 end-to-end test of the
+decennial census, and computer code used for this test as well as
+accompaning exposition has recently been released publicly by the
+Census Bureau.[refs to census pubs, danah boyd's whitepaper]
+
+We used the recently released code, preprints, and data files to
+quantify the error introduced by the E2E disclosure avoidance system
+when Census Bureau used it to guarantee differential privacy for the
+1940 US Census (for which the full data has previously been released)
+at a range of privacy loss budgets.  We also developed an empirical
+measure of privacy loss and used it to compare the error and privacy
+of the DP approach to that of a simple-random-sampling approach to
+protecting privacy.
+
+
 Methods
 =======
 
@@ -16,7 +62,7 @@ $\mathcal{P}$, for any pair of datasets $D$ and $D'$ that are the same
 everywhere except for on one person's data,
 $$
 \Pr\left[\mathcal{A}(D) = \mathcal{P}\right]
-\leq \exp\left(\epsilon\right)
+\leq \exp^{\epsilon}
 \Pr\left[\mathcal{A}(D') = \mathcal{P}\right].
 $$
 
@@ -114,12 +160,12 @@ aggregate statistics. [Which DPQueries were used in E2E?]
 The epsilon budget of the level governs how much total random noise to
 add. A further parameterization of the epsilon budget dictates how the
 noise will be allocated between the histogram counts and each type of
-aggregate statistic. We write $\epsilon_i = h + s_1 + s_2 + \ldots +
-s_k$, where $\epsilon_i$ is the budget for the geographic level, $h$
-is the budget for the histogram counts, and $s_1, \dots s_k$ are the
-budges for each of the $k$ types of aggregate statistics. Then noise
-is added independently to each histogram count and aggregate statistic
-as follows:
+aggregate statistic. We write $\epsilon_i = h + s_1 + s_2 + \ldots + s_k$,
+where $\epsilon_i$ is the budget for the geographic level, h is the budget
+for the histogram counts, and $s_1, \dots s_k$ are the budges for each
+of the $k$ types of aggregate statistics. Then noise is added
+independently to each histogram count and aggregate statistic as
+follows:
 
 
 $$\text{noisy histogram count} = \text{true histogram count} + G(h/2)
@@ -129,17 +175,17 @@ $$
 
 where $G(z)$ denotes the geometric distribution,
 
-$$\Pr[G(z)=k] = \frac{(1 - \exp(-z))\exp(-z|k|)}{1 + \exp(-z)}.$$
+$$\Pr{G(z)=k} = \frac{(1 - \exp{-z})\exp{-z|k|}}{(1 + \exp{-z})}.$$
 
 Note the noisy counts and noisy aggregate statistics are unbiased
-estimates with variance $(1-\exp(-z))^2/ (2 \exp(-z))$, where $z$ is
+estimates with variance $(1-\exp{-z})^2/ (2 \exp{-z})$, where $z$ is
 the parameter for the geometric noise added. A higher privacy budget
 means the noise added is more concentrated around zero, and therefore
-the corresponding statistic is more accurate. Therefore, adjusting the
-privacy budgets of the various aggregate statistics gives control over
-which statistics are the most private/least accurate (low fraction of
-the budget) and the most accurate/least private (high fraction of the
-budget).
+the corresponding statistic is more accurate. Therefore,
+adjusting the privacy budgets of the various aggregate statistics
+gives control over which statistics are the most private/least
+accurate (low fraction of the budget) and the most accurate/least
+private (high fraction of the budget).
 
 Note that the noise added to each histogram count comes from the same
 distribution; the noise does not scale with the magnitude of count,
@@ -203,4 +249,131 @@ We compare the bias, variance, and privacy to a simpler, but
 not-differentially-private approach to protecting privacy: simple
 random sample of X% total for a range of X.
 
+
+Results
+=======
+
+We found error in total count varied as a function of total privacy loss
+budget. For
+$\epsilon = 0.25$ produced mean TC error of {tc_error_enum_dist_0_25}
+at the enumeration district level and {tc_error_county_0_25} at the
+county level;
+$\epsilon = 1.0$ produced mean TC error of {tc_error_enum_dist_1_00}
+at the enumeration district level and {tc_error_county_1_00} at the
+county level;
+and $\epsilon = 4.0$ produced mean TC error of {tc_error_enum_dist_4_00}
+at the enumeration district level and {tc_error_county_4_00} at the
+county level (Full table in Supplementary Appendix 1).
+At the state level, there was TC error of $0.0$, as expected from the
+state TC invariant. (Figure 1)
+
+Error in stratified count varied similarly.  
+When $\epsilon = 0.25$, the mean SC error 
+at the enumeration district level was {sc_error_enum_dist_0_25} people,
+at the county level was {sc_error_county_0_25} people, and
+at the state level was {sc_error_state_0_25} people;
+for $\epsilon = 1.0$, the mean SC error 
+at the enumeration district level was {sc_error_enum_dist_1_00} people,
+at the county level was {sc_error_county_1_00} people, and
+at the state level was {sc_error_state_1_00} people; and
+for $\epsilon = 4.00$, the mean SC error 
+at the enumeration district level was {sc_error_enum_dist_4_00} people,
+at the county level was {sc_error_county_4_00} people, and
+at the state level was {sc_error_state_4_00} people.
+
+We found that the empirical privacy loss was often substantially
+smaller than the privacy loss budget.
+For $\epsilon = 0.25$, the empirical privacy loss for TC
+at the enumeration district level was {tc_privacy_loss_enum_dist_0_25},
+at the county level was {tc_privacy_loss_county_0_25}, and
+at the state level was {tc_privacy_loss_state_0_25};
+for $\epsilon = 1.0$, the empirical privacy loss for TC
+at the enumeration district level was {tc_privacy_loss_enum_dist_1_00},
+at the county level was {tc_privacy_loss_county_1_00}, and
+at the state level was {tc_privacy_loss_state_1_00}; and
+for $\epsilon = 4.0$, the empirical privacy loss for  TC
+at the enumeration district level was {tc_privacy_loss_enum_dist_4_00},
+at the county level was {tc_privacy_loss_county_4_00}, and
+at the state level was {tc_privacy_loss_state_4_00}.
+
+This relationship between privacy loss budget and empirical privacy
+loss was similar for stratified counts (SC) at the enumeration
+district and county level. At the state level, the empirical privacy
+loss for SC was substantially smaller than the empirical privacy loss
+for TC (Census Bureau used state-level TC as an invariant, which makes
+the formal privacy loss infinite for this quantity).
+For $\epsilon = 0.25$, the empirical privacy loss for SC
+at the enumeration district level was {sc_privacy_loss_enum_dist_0_25},
+at the county level was {sc_privacy_loss_county_0_25}, and
+at the state level was {sc_privacy_loss_state_0_25};
+for $\epsilon = 1.0$, the empirical privacy loss for SC
+at the enumeration district level was {sc_privacy_loss_enum_dist_1_00},
+at the county level was {sc_privacy_loss_county_1_00}, and
+at the state level was {sc_privacy_loss_state_1_00}; and
+for $\epsilon = 4.0$, the empirical privacy loss for SC
+at the enumeration district level was {sc_privacy_loss_enum_dist_4_00},
+at the county level was {sc_privacy_loss_county_4_00}, and
+at the state level was {sc_privacy_loss_state_4_00}.
+
+FIGURE 1 AROUND HERE
+
+Compared to 50% sample, ... (Figure 2)
+
+FIGURE 2 AROUND HERE
+
+The bias introduced by TopDown varied with diversity index, as
+hypothesized.
+Enumeration districts with only X empty strata had TC
+and SC systematically lower than ground truth, while enumeration
+districts with X empty strata had TC and SC systematically higher.
+The size of this bias decreased as a function of $\epsilon$, from
+{tc_bias_enum_dist_X_0_25} for $\epsilon = 0.25$ to 
+{tc_bias_enum_dist_X_4_00} for $\epsilon = 4.0$.
+
+Counties displayed the same general pattern, but there are fewer
+counties and they typically have less empty strata, so it was not as
+pronounced.
+The size of this bias again decreased as a function of $\epsilon$, from
+{tc_bias_county_X_0_25} for $\epsilon = 0.25$ to 
+{tc_bias_county_X_4_00} for $\epsilon = 4.0$.
+(Figure 3)
+
+FIGURE 3 AROUND HERE
+
+Discussion
+==========
+
+TopDown introduced near minimal noise, but created a quantifiable
+amount of bias.  Bias disproportionately affected small, homogeneous
+districts; cities of sufficient size will not notice who they have
+lost, but rural districts likely *will* notice the population count
+(and appropriations) that they have gained.  The new DAS affords
+redistribution of resources from diverse urban communities to
+segregated rural communities.
+
+Quality Assurance and the correct count process.
+
+Emergency preparedness and other routine tasks.
+
+Research tasks, e.g. segregation research and how it may be hampered.
+On the other hand, human subject research requires informed consent
+(Belmont Principles); de-identified data is not HSR, but if it is
+re-identifiable, it should not be considered de-identified, should it?
+
+Survey weights.
+
+Need for continued discussion.
+
+Limitations
+-----------
+
+To Come
+
+
+
+*Acknowledgements*: Thanks to Neil Marquez for suggesting comparing TopDown to simple random sampling.
+
+
+References
+-------------
 

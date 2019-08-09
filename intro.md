@@ -5,7 +5,7 @@ In the United States, the Decennial Census is an important part of
 democratic governance.  Every ten years, the US Census Bureau is
 consititutionally required to count the "whole number of persons in
 each State", and in 2020 this effort is likely to cost over fifteen
-billion dollars.  The results will be used for apportioning
+billion dollars.[ref]  The results will be used for apportioning
 representation in the US House of Representatives, for dividing
 federal tax dollars between states, as well as for a multitude of
 other governmental activities at the national, state, and local level.
@@ -13,20 +13,20 @@ Data from the decennial census will also be used extensively by
 sociologists, economists, demographers, and other researchers, and it
 will also inform strategic decisions in the private and non-profit
 sectors, and facilitate the accurate weighting of subsequent
-population surveys for the next decade.
+population surveys for the next decade.[ref]
 
 The confidentiality of information in the decenial census is also
 constitutionally mandated, and the 2020 US Census will use a novel
-approach to "disclosure avoidance" to protect respondents' data. This
+approach to "disclosure avoidance" to protect respondents' data.[ref] This
 approach builds on Differential Privacy (DP), a mathematical
 definition of privacy and privacy loss that has been developed over
 the last decade and a half in the theoretical computer science and
-cryptography communities. Although the new approach allows a more
+cryptography communities.[ref] Although the new approach allows a more
 precise accounting of the noise introduced by the process, it also
 risks reducing the utility of census data---it may produce counts that
 are substantially noisier than the previous discloure avoidance
 system, which was based on a technique called swapping, and relied on
-the detailed of the swapping procedure being secret.
+the detailed of the swapping procedure being secret.[ref]
 
 To date, there is a lack of empirical examination of DP in census DAS,
 but the approach was applied to the 2018 end-to-end test of the
