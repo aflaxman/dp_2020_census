@@ -5,28 +5,30 @@ In the United States, the Decennial Census is an important part of
 democratic governance.  Every ten years, the US Census Bureau is
 consititutionally required to count the "whole number of persons in
 each State", and in 2020 this effort is likely to cost over fifteen
-billion dollars.[ref]  The results will be used for apportioning
-representation in the US House of Representatives, for dividing
-federal tax dollars between states, as well as for a multitude of
-other governmental activities at the national, state, and local level.
-Data from the decennial census will also be used extensively by
-sociologists, economists, demographers, and other researchers, and it
-will also inform strategic decisions in the private and non-profit
-sectors, and facilitate the accurate weighting of subsequent
-population surveys for the next decade.[ref]
+billion dollars.[ref GAO-18-635 Census Bureau Improved the Quality of
+Its Cost Estimation but Additional Steps Are Needed to Ensure
+Reliability] The results will be used for apportioning representation
+in the US House of Representatives, for dividing federal tax dollars
+between states, as well as for a multitude of other governmental
+activities at the national, state, and local level.  Data from the
+decennial census will also be used extensively by sociologists,
+economists, demographers, and other researchers, and it will also
+inform strategic decisions in the private and non-profit sectors, and
+facilitate the accurate weighting of subsequent population surveys for
+the next decade.[@ruggles2019differential]
 
 The confidentiality of information in the decenial census is also
 constitutionally mandated, and the 2020 US Census will use a novel
-approach to "disclosure avoidance" to protect respondents' data.[ref] This
+approach to "disclosure avoidance" to protect respondents' data.[ref TopDown draft? something better?] This
 approach builds on Differential Privacy (DP), a mathematical
 definition of privacy and privacy loss that has been developed over
 the last decade and a half in the theoretical computer science and
-cryptography communities.[ref] Although the new approach allows a more
+cryptography communities.[ref Dwork and Roth, Privacy Book?] Although the new approach allows a more
 precise accounting of the noise introduced by the process, it also
 risks reducing the utility of census data---it may produce counts that
 are substantially noisier than the previous discloure avoidance
 system, which was based on a technique called swapping, and relied on
-the detailed of the swapping procedure being secret.[ref]
+the detailed of the swapping procedure being secret.[@mckenna2018disclosure]
 
 To date, there is a lack of empirical examination of DP in census DAS,
 but the approach was applied to the 2018 end-to-end test of the
@@ -125,10 +127,11 @@ unit (e.g. census tract one), a race combination (e.g. Black), one sex
 (e.g. Female), and one age (e.g. 46). Although the 2020 census will
 include more variables, the 1940 data run with E2E test code only
 included race (6 mutually exclusive categories), ethnicity
-(non-Hispanic and Hispanic), and age group (under-18 and 18-plus).
+(non-Hispanic and Hispanic), age group (under-18 and 18-and-over),
+ and group quarters (6 categories).
 The number in the box, which we call a histogram count, is the number
 of people in the geographic unit with the features of the label
-(e.g. the number of 18-plus-year-old non-Hispanic White women in
+(e.g. the number of 18-and-over non-Hispanic White women in
 enumeration district 107). Step one adds geometrically distributed
 random noise to numbers in each box according to the privacy budget at
 the level $\epsilon_i.$ This noisy data is unsatisfactory because the
@@ -136,7 +139,7 @@ noisy counts (i) are sometimes negative, (ii) do not satisfy the
 public properties, and (iii) are inconsistent with the synthetic data
 produced at the coarser level (e.g. the sum of the noisy counts in all
 the boxes corresponding to a census tracts within Cook county may not
-equal the number of people in Cook county reported in the synthetic
+equal the number of people in Cook County reported in the synthetic
 data produced in the previous step.) Step two solves an
 optimization problem which adjusts the counts in boxes so that they
 are positive, satisfy the invariants and inequalities, are consistent with the
@@ -153,9 +156,19 @@ set of aggregate statistics.
 Aggregate statistics are sets of histogram count sums specified by
 some characteristics. For example, the ``ethnicity-sex" aggregate
 statistic contains set of four counts: Hispanic men, Hispanic women,
-non-Hispanic men, and non-Hispanic women. The census bureau plans to
+non-Hispanic men, and non-Hispanic women. Census Bureau researchers have discussed plans to
 include each value that will appear in a tabular summary in the set of
-aggregate statistics. [Which DPQueries were used in E2E?]
+aggregate statistics.  The E2E test included two DP queries: a group-quarters query, 
+
+which increases the accuracy of the count of each household type at
+each level of the hierarchy, and a race/ethnicity/age query, which
+increases the accuracy of the stratified counts of people by race,
+ethnicity, and age across all household/group quarters types (again
+for each level of the spatial hierarchy). The detailed queries were
+afforded 10% of the privacy budget at each level, while the DP queries
+split the remaining 90% of the privacy budget, with 22.5% spent on the
+group-quarters queries and 67.5% spend on the race/ethnicity/age
+queries.
 
 The epsilon budget of the level governs how much total random noise to
 add. A further parameterization of the epsilon budget dictates how the
@@ -197,6 +210,11 @@ in the 1940s because we have fewer variables. I am not sure if I
 should restrict to their variables for the examples. I think it makes
 sense for the examples to be more like the 2020 census.]
 
+Although the E2E test used independent geometric noise for each
+detailed query and DP query at each level, the version of TopDown for
+the 2020 Census DAS will likely use the High Dimensional Matrix
+Mechanism [ref], which may reduce the variance of the noise.
+
 ### Step Two: Optimization.
 
 In this step, the synthetic data is created from the noisy data by
@@ -215,9 +233,20 @@ these equations and has the property that the value of each variable
 is as close as possible to the corresponding noisy histogram count or
 noisy aggregate statistic. This is done in a way that favors closeness
 for the noisy values constructed by adding noise from a lower variance
-geometric distribution. [Integers! How?]
+geometric distribution.
 
-`TopDown` options still to be selected
+The solution to this optimization is not necessarily itegral, however,
+and the TopDown algorithm uses a second optimization step to round
+fractional counts to integers. In this optimization, the linear
+equations and inequalities are the same as from the previous
+optimization, and the objective function is changed to minimize $(1 -
+2(x_i - \lfloor x_i \rfloor)) z_i$, where each $x_i$ corresponds to a
+(potentially non-integer) detailed query count given in the synthetic
+data and $z_i$ required to take an integer value of 0 or 1, where $z_i
+= 0$ implies $x_i$ should be rounded down and $z_i = 1$ implies that
+$x_i$ should be rounded up.
+
+TopDown options still to be selected
 --------------------------------------
 
 The 7 key policy choices, and how they were set in the 2018 end-to-end
@@ -237,10 +266,24 @@ Our Evaluation Approach
 
 1. Calculate errors and their variance (for total count and
 age/race/ethnicity stratified count for state, county, and
-enum_district)
+enum_district).  We also summarized the size of these counts to
+understand relative error as well as the absolute error introduced by
+TopDown.
 
 2. Calculate "empirical privacy loss" (which we have just invented for
 the purposes of this paper; need to describe it here) (for same groupings)
+
+To measure empirical privacy loss, we approximate the probability
+distribution of the residuals $\hat{p}(x)$ using kernel density
+estimation, and compare the log-ratio inspired by the definition of $\epsilon$-DP:
+
+$$\text{EPL}(x) = \log\left(\hat{p}(x) / \hat{p}(x+1)\right).$$
+
+We hypothesized that the EPL of TopDown will be substantially smaller
+than the theoretical guarantee of $\epsilon$.  However, it is possible
+that it will be _much larger_ than $\epsilon$, due to the
+difficult-to-predict impact of including certain invariants. [ref
+invariants paper from Census Bureau]
 
 3. Search for bias, with our hypothesis that it appears differentially
 with respect to diversity of spatial units.)

@@ -32,12 +32,6 @@ for fname in ['intro.md', 'methods.md',
 with open('plugged_text.md', 'w') as f:
     f.write(text)
 
-#!pandoc plugged_text.md -o dp_2020_census.docx
-# TODO: include references, like JJ did in previous paper
-# bib file like this: https://stash.ihme.washington.edu/projects/VA/repos/insilicova/browse/paper/references.bib
-# then include references like this:  [@phillips2015crvs] 
-# you need a citation style file like this: https://stash.ihme.washington.edu/projects/VA/repos/insilicova/browse/paper/citation-style-springer-vancouver-brackets.csl
+#python compile_writeup.py; pandoc --filter pandoc-citeproc --bibliography=references.bib --csl style.csl plugged_text.md -o dp_2020_census.docx
 
-# then we can do something like this:
-#pandoc --filter pandoc-citeproc --bibliography=$(PAPER_REFS) \
-#       --csl $(CITATION_STYLE) $(PAPER_MD) $(PAPER_METADATA) -o $(PAPER_DRAFTS)/$@
+#!pandoc plugged_text.md -o dp_2020_census.docx
