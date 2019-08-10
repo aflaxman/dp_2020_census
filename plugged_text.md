@@ -62,7 +62,7 @@ $\mathcal{P}$, for any pair of datasets $D$ and $D'$ that are the same
 everywhere except for on one person's data,
 $$
 \Pr\left[\mathcal{A}(D) = \mathcal{P}\right]
-\leq \exp^{\epsilon}
+\leq \exp\left(\epsilon\right)
 \Pr\left[\mathcal{A}(D') = \mathcal{P}\right].
 $$
 
@@ -160,12 +160,12 @@ aggregate statistics. [Which DPQueries were used in E2E?]
 The epsilon budget of the level governs how much total random noise to
 add. A further parameterization of the epsilon budget dictates how the
 noise will be allocated between the histogram counts and each type of
-aggregate statistic. We write $\epsilon_i = h + s_1 + s_2 + \ldots + s_k$,
-where $\epsilon_i$ is the budget for the geographic level, h is the budget
-for the histogram counts, and $s_1, \dots s_k$ are the budges for each
-of the $k$ types of aggregate statistics. Then noise is added
-independently to each histogram count and aggregate statistic as
-follows:
+aggregate statistic. We write $\epsilon_i = h + s_1 + s_2 + \ldots +
+s_k$, where $\epsilon_i$ is the budget for the geographic level, $h$
+is the budget for the histogram counts, and $s_1, \dots s_k$ are the
+budges for each of the $k$ types of aggregate statistics. Then noise
+is added independently to each histogram count and aggregate statistic
+as follows:
 
 
 $$\text{noisy histogram count} = \text{true histogram count} + G(h/2)
@@ -175,17 +175,17 @@ $$
 
 where $G(z)$ denotes the geometric distribution,
 
-$$\Pr{G(z)=k} = \frac{(1 - \exp{-z})\exp{-z|k|}}{(1 + \exp{-z})}.$$
+$$\Pr[G(z)=k] = \frac{(1 - \exp(-z))\exp(-z|k|)}{1 + \exp(-z)}.$$
 
 Note the noisy counts and noisy aggregate statistics are unbiased
-estimates with variance $(1-\exp{-z})^2/ (2 \exp{-z})$, where $z$ is
+estimates with variance $(1-\exp(-z))^2/ (2 \exp(-z))$, where $z$ is
 the parameter for the geometric noise added. A higher privacy budget
 means the noise added is more concentrated around zero, and therefore
-the corresponding statistic is more accurate. Therefore,
-adjusting the privacy budgets of the various aggregate statistics
-gives control over which statistics are the most private/least
-accurate (low fraction of the budget) and the most accurate/least
-private (high fraction of the budget).
+the corresponding statistic is more accurate. Therefore, adjusting the
+privacy budgets of the various aggregate statistics gives control over
+which statistics are the most private/least accurate (low fraction of
+the budget) and the most accurate/least private (high fraction of the
+budget).
 
 Note that the noise added to each histogram count comes from the same
 distribution; the noise does not scale with the magnitude of count,
