@@ -40,7 +40,7 @@ def topdown_colnames():
     col_names = ('SCHEMA_TYPE_CODE, SCHEMA_BUILD_ID, STATE, COUNTY, ENUMDIST, '
                  'EUID, EPNUM, RTYPE, QREL, QSEX, QAGE, CENHISP, CENRACE, QSPANX, '
                  'QRACE1, QRACE2, QRACE3, QRACE4, QRACE5, QRACE6, QRACE7, QRACE8, CIT').split(', ')
-
+    return col_names
 
 def load_transform_orig():
     """Tally count from 1940s IPUMS data, stratified by
@@ -49,7 +49,7 @@ def load_transform_orig():
     Results
     -------
     returns pd.DataFrame with the following columns
-    ['state', 'county', 'enum_dist', 'gq', 'va', 'race', 'eth', 'count']
+    ['state', 'county', 'enum_dist', 'gq', 'age', 'race', 'eth', 'count']
 
     Timing
     ------
@@ -75,19 +75,22 @@ def load_transform_orig():
                 enum = se.ENUMDIST
                 gq = se.GQ
             else: # person record, assume it refers to a person in most recently read household record
-                va = 1*(se.AGE >= 18)
+                age = 17 + (se.AGE >= 18)  # match coding from 1940s E2E test of TopDown
                 race = se.RACE
                 eth = se.HISPAN
 
-                counts[(state, county, enum, gq, va, race, eth)] += 1
+                counts[(state, county, enum, gq, age, race, eth)] += 1
 
             if (i*chunksize + j) % 10_000 == 0:
                 print('.', end=' ', flush=True)
 
-        if i >= 10: break
+        #if i >= 0: break
         
     counts = pd.Series(counts).reset_index()
-    counts.columns = ['state', 'county', 'enum_dist', 'gq', 'va', 'race', 'eth', 'count'] # brittle pattern, don't mess it up
+    counts.columns = ['state', 'county', 'enum_dist', 'gq', 'age', 'race', 'eth', 'count'] # brittle pattern, don't mess it up
+
+    print()
+
     return counts
 
 def load_transform_dp(epsilon, replicate):
@@ -102,28 +105,55 @@ def load_transform_dp(epsilon, replicate):
     Results
     -------
     returns pd.DataFrame with the following columns
-    ['state', 'county', 'enum_dist', 'gq', 'va', 'race', 'eth', 'count']
+    ['state', 'county', 'enum_dist', 'gq', 'age', 'race', 'eth', 'count']
+
+    Timing
+    ------
+    7s for 2_000_000 rows
+    43s for 20_000_000 rows
+    predict 5m for full file (132_404_779 rows)
     """
     counts = collections.Counter()
 
     fname = f'/snfs1/Project/Models/us_census/{epsilon}-RUN{replicate}/MDF_PER.txt'
-
-    fname = '/home/j/Project/Models/us_census/EXT1940USCB.dat'
+    print(fname)
     colnames = topdown_colnames()
 
-    chunksize = 20_000
-
-
-    chunksize = 10_000
-    iter = pd.read_csv(fname, sep='|', names=col_names, header=None, comment='#', chunksize=chunksize)
-    df = pd.DataFrame()
+    chunksize = 2_000_000
+    iter = pd.read_csv(fname, sep='|', names=colnames, header=None, comment='#', chunksize=chunksize)
 
     for i, df_i in enumerate(iter):
-        print(f'Processing chunk {i}, a dataframe with shape {df_i.shape}')
-        df = df.append(df_i[df_i.STATE == state_fips])
-        # if i > 1: break
-    print(f'Loaded data for one state, a dataframe with shape {df.shape}')
+        print('.', end=' ', flush=True)
+        counts_i = df_i.groupby(['STATE', 'COUNTY', 'ENUMDIST', 'RTYPE', 'QAGE', 'CENRACE', 'CENHISP']).EPNUM.count()
+        counts.update(counts_i.to_dict())  # I find this method name confusing, but it adds the values 
+        #if i >= 0: break
     
-    return df
-if __name__== "__main__":
+    counts = pd.Series(counts).reset_index()
+    counts.columns = ['state', 'county', 'enum_dist', 'gq', 'age', 'race', 'eth', 'count'] # brittle pattern, don't mess it up
+
+    print()
+
+    return counts
+
+
+def etl_all():
+    """Extract, transform, and save count files for original 1940s Census
+    Data and for all TopDown runs.
+    """
+
+    # process the top down output
+    for epsilon in '0.25 0.50 0.75 1.0 2.0 4.0 6.0 8.0'.split():
+        for run in '1234':
+            fname = f'/snfs1/Project/Models/us_census/dp_counts-{epsilon}-RUN{run}.csv'
+            print(fname)
+            counts = load_transform_dp(epsilon, run)
+            counts.to_csv(fname)
+
+    # process the original data
+    fname = '/snfs1/Project/Models/us_census/orig_counts.csv'
+    print(fname)
     counts = load_transform_orig()
+    counts.to_csv(fname)
+
+if __name__== "__main__":
+    etl_all()
