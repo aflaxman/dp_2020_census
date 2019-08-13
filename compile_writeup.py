@@ -22,7 +22,7 @@ for fname in ['intro.md', 'methods.md',
         # substitution out of it
         if fname != 'methods.md':
             # plug in the numbers
-            pass #text_f = text_f.format(**results)
+            text_f = text_f.format(**results)
 
         text += text_f
 
