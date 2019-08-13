@@ -155,5 +155,61 @@ def etl_all():
     counts = load_transform_orig()
     counts.to_csv(fname)
 
+
+def load_orig_counts():
+    """Load stratified counts that resulted from the ETL of the original
+    1940s data. Also fix up the ethnicity coding.
+    
+    Results
+    -------
+
+    returns pd.DataFrame with columns state, county, enum_dist, gq,
+    age, race, eth, count.
+
+    """
+
+    orig_counts = pd.read_csv('/snfs1/Project/Models/us_census/orig_counts.csv', index_col=0)
+    orig_counts['eth'] = 1 + (orig_counts.eth != 0)  # HACK: not a clear way to remap, but it works
+    
+    return orig_counts
+
+
+def simulate_sample_down_counts(orig_counts, sample_frac=0.1, seed=12345):
+    np.random.seed(12345) # set random seed for reproducibility
+
+    def roster_from_counts(count_series):
+        roster = np.empty(shape=np.sum(count_series), dtype=count_series.index.dtype)
+
+        j = 0
+        for i, val in count_series.iteritems():
+            roster[j:(j+val)] = i
+            j += val
+        return roster
+
+    roster = roster_from_counts(orig_counts['count'])
+    N = int(np.round(sample_frac*len(roster)))
+    sampled_rows = np.random.choice(roster, size=N, replace=False)
+    sampled_cef = orig_counts.loc[sampled_rows].copy()
+    sampled_cef['count'] = 1/sample_frac
+
+    stratification_cols = list(orig_counts.columns[:-1])
+    sampled_counts = sampled_cef.groupby(stratification_cols)['count'].sum()
+    return sampled_counts.reset_index()
+
+def load_dp_counts(epsilon, run):
+    """Load stratified counts that resulted from the ETL of the DP 
+    1940s data.
+
+    Results
+    -------
+
+    returns pd.DataFrame with columns state, county, enum_dist, gq,
+    age, race, eth, count.
+
+    """
+    dp_counts = pd.read_csv(f'/snfs1/Project/Models/us_census/dp_counts-{epsilon}-RUN{run}.csv', index_col=0)
+    return dp_counts
+
+
 if __name__== "__main__":
     etl_all()
