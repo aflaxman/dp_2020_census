@@ -38,7 +38,7 @@ def perturbation_error(df_orig, df_new, stratification_cols=['state', 'county'])
                  how='outer', suffixes=('_orig', '_new')
              )
     t = t.fillna(0)
-    error = t.count_orig - t.count_new
+    error = t.count_new - t.count_orig
 
     return error
 
@@ -73,10 +73,15 @@ def empirical_privacy_loss(error):
     df['hist'] = f_empirical[:-1]
     df['epl'] = np.log(ratio)
 
-    kernel = scipy.stats.gaussian_kde(all_errors)
-    f_smoothed = N*kernel(.5 * (bin_edges[:-1] + bin_edges[1:]))
-    ratio = f_smoothed[:-1] / f_smoothed[1:]
-    df['smooth_hist'] = f_smoothed[:-1]
-    df['smooth_epl'] = np.log(ratio)
+    if np.allclose(all_errors, 0):
+        # can't do kde of all zeros
+        df['smooth_hist'] = np.nan * np.ones_like(bin_edges[:-1])
+        df['smooth_epl'] = np.inf * np.ones_like(bin_edges[:-1])
+    else:
+        kernel = scipy.stats.gaussian_kde(all_errors)
+        f_smoothed = N*kernel(.5 * (bin_edges[:-1] + bin_edges[1:]))
+        ratio = f_smoothed[:-1] / f_smoothed[1:]
+        df['smooth_hist'] = f_smoothed[:-1]
+        df['smooth_epl'] = np.log(ratio)
     return df
 
