@@ -379,12 +379,31 @@ where $p(x)$ is the probability density corresponding to the
 histogram in (a), after smoothing with a Gaussian kernel of bandwidth
 $0.1$.
 
-errors and empirical privacy
-loss for 0.25, 1.0, 4.0 for total count of enumeration district
+We found that the MAE and EPL of TopDown were similar to that
+introduced by simple random sampling for $\epsilon \geq 1.0$.
 
-[Report of which amount of sampling compared to which epsilon for mae, 95-th percentile, and EPL.] (Figure 2)
+To describe in words:
 
-FIGURE 2 AROUND HERE  --- scatter of MAE and max EPL for range of epsilon and sample size
+Total count
+County
+Enum Dist
+Stratified Count
+State
+County
+Enum Dist
+(Figure 2)
+
+![](fig_2_td_vs_srs.png "Figure 2 TopDown and Simple Random Sample")
+*Figure 2*: The curve with circular markers shows that in TopDown, the
+choice of $\epsilon$ controls the tradeoff between MAE and EPL,
+although for $\epsilon < 1$ there is not much difference in EPL.  The
+curve with square markers shows the MAE and EPL of Simple Random
+Sampling for a range of sample sizes, for comparison.  For example,
+TopDown with $\epsilon = 1.0$ provides privacy loss and estimation
+error similar to a sample of 50% of the 1940 census data, while
+$\epsilon = 2.0$ is comparable to a 75% sample (for counts stratified
+by age, race, and ethnicity at the county level; different aggregate
+statistics produce different curves).
 
 The bias introduced by TopDown varied with diversity index, as
 hypothesized.
