@@ -5,7 +5,7 @@ In the United States, the Decennial Census is an important part of
 democratic governance.  Every ten years, the US Census Bureau is
 consititutionally required to count the "whole number of persons in
 each State", and in 2020 this effort is likely to cost over fifteen
-billion dollars.[@gao2018census] The results will be used for apportioning representation
+billion dollars.[@garfinkel2019understanding, @gao2018census] The results will be used for apportioning representation
 in the US House of Representatives, for dividing federal tax dollars
 between states, as well as for a multitude of other governmental
 activities at the national, state, and local level.  Data from the
@@ -17,7 +17,7 @@ the next decade.[@ruggles2019differential]
 
 The confidentiality of information in the decenial census is also
 constitutionally mandated, and the 2020 US Census will use a novel
-approach to "disclosure avoidance" to protect respondents' data.[ref TopDown draft? something better? https://www.census.gov/newsroom/blogs/research-matters/2019/06/disclosure_avoidance.html] This
+approach to "disclosure avoidance" to protect respondents' data.[@abowd2018disclosure] This
 approach builds on Differential Privacy (DP), a mathematical
 definition of privacy and privacy loss that has been developed over
 the last decade and a half in the theoretical computer science and
@@ -32,7 +32,7 @@ To date, there is a lack of empirical examination of DP in census DAS,
 but the approach was applied to the 2018 end-to-end test of the
 decennial census, and computer code used for this test as well as
 accompaning exposition has recently been released publicly by the
-Census Bureau.[refs to census pubs, danah boyd's whitepaper]
+Census Bureau.[@abowd2018disclosure, @boyd2019differential]
 
 We used the recently released code, preprints, and data files to
 quantify the error introduced by the E2E disclosure avoidance system

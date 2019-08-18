@@ -58,8 +58,8 @@ def empirical_privacy_loss(error):
 
     """
 
-    lb = np.percentile(error, 2.5)
-    ub = np.percentile(error, 97.5)
+    lb = np.percentile(error, 1)
+    ub = np.percentile(error, 99)
     bnd = 1.5*max(abs(lb), abs(ub))
 
     est_range = [-bnd, bnd]
@@ -78,7 +78,7 @@ def empirical_privacy_loss(error):
         df['smooth_hist'] = np.nan * np.ones_like(bin_edges[:-1])
         df['smooth_epl'] = np.inf * np.ones_like(bin_edges[:-1])
     else:
-        kernel = scipy.stats.gaussian_kde(all_errors)
+        kernel = scipy.stats.gaussian_kde(all_errors, bw_method=.1)
         f_smoothed = N*kernel(.5 * (bin_edges[:-1] + bin_edges[1:]))
         ratio = f_smoothed[:-1] / f_smoothed[1:]
         df['smooth_hist'] = f_smoothed[:-1]

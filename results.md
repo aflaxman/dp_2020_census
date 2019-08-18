@@ -1,3 +1,4 @@
+
 Results
 =======
 
@@ -15,8 +16,8 @@ county level (Full table in Supplementary Appendix 1).
 At the state level, there was TC error of $0.0$, as expected from the
 state TC invariant. (Figure 1)
 
-Error in stratified count varied similarly.  
-When $\epsilon = 0.25$, the median absolute error in SC
+Error in stratified count varied similarly; When
+$\epsilon = 0.25$, the median absolute error in SC
 at the enumeration district level was {sc_enum_dist_0_25_mae} people,
 at the county level was {sc_county_0_25_mae} people, and
 at the state level was {sc_state_0_25_mae} people;
@@ -44,9 +45,8 @@ and at the county level was {tc_privacy_loss_county_4_0_max_abs}.
 
 This relationship between privacy loss budget and empirical privacy
 loss was similar for stratified counts (SC) at the enumeration
-district and county level. The empirical privacy
-loss for SC was roughly twice the empirical privacy loss
-for TC and the county and enumeration district level.
+district and county level, but for privacy loss budgets of 1.0 and less, the empirical privacy
+at the enumeration district level was loss for SC was not as responsive to $\epsilon$.
 For $\epsilon = 0.25$, the empirical privacy loss for SC
 at the enumeration district level was {sc_privacy_loss_enum_dist_0_25_max_abs},
 at the county level was {sc_privacy_loss_county_0_25_max_abs}, and
@@ -60,7 +60,17 @@ at the enumeration district level was {sc_privacy_loss_enum_dist_4_0_max_abs},
 at the county level was {sc_privacy_loss_county_4_0_max_abs}, and
 at the state level was {sc_privacy_loss_state_4_0_max_abs}.
 
-FIGURE 1 AROUND HERE --- distribution of errors and empirical privacy
+![](fig_1_hist_epl.png "Figure 1 Error Histogram and Empirical Privacy Loss Function")
+
+*Figure 1*: Panel (a) shows the distribution of error (DP - True) for
+stratified counts at the enumeration district level, stratified by
+age, race, and ethnicity; and panel (b) shows the empirical privacy
+loss, $EPL(x) = \log\left(p(x) / p(x+1)\right),$
+where $p(x)$ is the probability density corresponding to the
+histogram in (a), after smoothing with a Gaussian kernel of bandwidth
+$0.1$.
+
+errors and empirical privacy
 loss for 0.25, 1.0, 4.0 for total count of enumeration district
 
 [Report of which amount of sampling compared to which epsilon for mae, 95-th percentile, and EPL.] (Figure 2)
