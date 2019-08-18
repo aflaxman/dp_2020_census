@@ -2,7 +2,7 @@ Methods
 =======
 
 _Differential privacy definition and history._  A randomized algorithm for
-analyzing a database is _differentially private_ if withholding or changing one
+analyzing a database is _differentially private_ (DP) if withholding or changing one
 person's data does not substantially change the algorithm's
 output. If the results of the computation are roughly the same whether
 or not my data are included in the database, then the computation must
@@ -46,59 +46,60 @@ households in that district.
 _TopDown algorithm goal and high-level description._ At a high level,
 the census approach to this challenge repeats two steps for multiple
 levels of a geographic hierarchy (from the top down, hence the name
-`TopDown`). The first step adds randomness to the data counts in a way
-that satisfies $\epsilon$-differential privacy. This produces a set of
-counts, $N$. The noisy counts in $N$ might have negative counts and
-violate the invariants and inequalities.  The second step finds the
+`TopDown`). The first step (Noisy Histogram) adds noise from a carefully chosen
+distribution to the data counts.
+This produces a set of
+noisy counts. The noisy counts might have negative counts or
+violate the invariants and inequalities.  The second step (Optimize) finds the
 argument that minimizes a quadratic objective function, subject to
 constraints from a system of linear equations and inequalities that
 represent the invariants, inequalities, consistency with the DP counts
-from one level higher, and non-negativity. The values that optimize
-this constrained optimization are as close to the noisy data as
+from one level higher, and non-negativity. The solution to
+this constrained optimization is as close to the noisy counts as
 possible while also satisfying the public properties and requiring
-that all counts are positive integers and other internal consistency
+that all counts are positive integers and other internal-consistency
 constraints. The final output of the TopDown algorithm is a synthetic
-data set $S$ that has data counts matching the values that minimize
+data set that has data counts matching the values that minimize
 the constrained optimization.  This satisfies $\epsilon$-differential
 privacy and the invariants and inequalities and affords detailed
 control of how the privacy budget is spent between and within levels
 of the hierarchy.
 
-The census data has six different geographic levels: national, state,
+The census data has six geographic levels, nested hierarchically: national, state,
 county, census tracts, block groups, and blocks. The census's
 differentially private algorithm uses a top-down approach to create
-the synthetic data; steps one and two are performed six times in order
+the synthetic data; steps one and two are performed six times,
 from the coarsest to the finest level. Each level is assigned a
-privacy budget $\epsilon_i$ and the entire algorithm will satisfy
-$\epsilon$-differential privacy where $\epsilon=\sum_{i=1}^6
+privacy budget $\epsilon_i$ and the entire algorithm is
+$\epsilon$-differential privacy for $\epsilon=\sum_{i=1}^6
 \epsilon_i.$
 
 At a specific geographic level (say census tracts) the true data has
 the form of a histogram; a set of boxes each labeled with a geographic
 unit (e.g. census tract one), a race combination (e.g. Black), one sex
 (e.g. Female), and one age (e.g. 46). Although the 2020 census will
-include more variables, the 1940 data run with E2E test code only
-included race (6 mutually exclusive categories), ethnicity
+include more variables, the 1940 data run with E2E test code
+included the following: race (6 mutually exclusive categories), ethnicity
 (non-Hispanic and Hispanic), age group (under-18 and 18-and-over),
- and group quarters (6 categories).
+and group quarters (2 categories).
 The number in the box, which we call a histogram count, is the number
 of people in the geographic unit with the features of the label
 (e.g. the number of 18-and-over non-Hispanic White women in
 enumeration district 107). Step one adds geometrically distributed
 random noise to numbers in each box according to the privacy budget at
-the level $\epsilon_i.$ This noisy data is unsatisfactory because the
+the level $\epsilon_i$. This noisy data is unsatisfactory because the
 noisy counts (i) are sometimes negative, (ii) do not satisfy the
 public properties, and (iii) are inconsistent with the synthetic data
 produced at the coarser level (e.g. the sum of the noisy counts in all
 the boxes corresponding to a census tracts within Cook county may not
 equal the number of people in Cook County reported in the synthetic
-data produced in the previous step.) Step two solves an
+data produced in the previous level.) Step two solves an
 optimization problem which adjusts the counts in boxes so that they
 are positive, satisfy the invariants and inequalities, are consistent with the
 synthetic data produced at the coarser level, and are as close as
 possible to the noisy counts (and are integers).
 
-### Step One: Adding random noise.
+### Step One: Noisy Histogram
 
 The E2E DAS added random
 noise in a flexible way that allowed the user to choose what
@@ -167,7 +168,7 @@ detailed query and DP query at each level, the version of TopDown for
 the 2020 Census DAS will likely use the High Dimensional Matrix
 Mechanism [ref], which may reduce the variance of the noise.
 
-### Step Two: Optimization.
+### Step Two: Optimize
 
 In this step, the synthetic data is created from the noisy data by
 optimizing a quadratic objective subject to a system of linear
@@ -202,46 +203,48 @@ TopDown options still to be selected
 --------------------------------------
 
 The 7 key policy choices, and how they were set in the 2018 end-to-end
-test:
+test when run on the 1940s Census data:
 
-1. Overall privacy 
-2. How to split this budget between national, state, county, tract, block group, and block
-3. At each level, how to split level-budget detailed  DP 
-4. What DP Queries to include
-5. What invariants to include
-6. What constraints to include
-7. What to publish
+1. Overall privacy. A range of $\epsilon$ values, $\{0.25, 0.50, 0.75, 1.0, 2.0, 4.0, 8.0\}$.
+
+2. How to split this budget between national, state, county, tract, block group, and block. In E2E-1940, $\epsilon$ was split evenly between state, county, and enumeration district [not national, right?]
+3. What DP Queries to include.  age/race/ethnicity (i.e. aggregating over group quarters) and gq (i.e. number free-living and number not)
+4. At each level, how to split level-budget detailed DP -  .1 for detailed queries; 0.225 for group quarters; and 0.675 for age/race/ethnicity
+5. What invariants to include - state level total count of people; enumeration district total count of (occupied?) households
+6. What constraints to include - total count of people must be greater or equal to total count of occupied households
+7. What to publish - synthetic person file and synthetic household file.
 
 
 Our Evaluation Approach
 -----------------------
 
-1. Calculate errors and their variance (for total count and
-age/race/ethnicity stratified count for state, county, and
-enum_district).  We also summarized the size of these counts to
-understand relative error as well as the absolute error introduced by
-TopDown.
+1. Calculate residuals and key statistics of the distribution of these errors (for total count and
+   age/race/ethnicity stratified count at the state, county, and
+   enum_district level).  We also summarized the size of these counts to
+   understand relative error as well as the absolute error introduced by
+   TopDown.
 
 2. Calculate "empirical privacy loss" (which we have just invented for
-the purposes of this paper; need to describe it here) (for same groupings)
+   the purposes of this paper; need to describe it here) (for same groupings)
 
-To measure empirical privacy loss, we approximate the probability
-distribution of the residuals $\hat{p}(x)$ using kernel density
-estimation, and compare the log-ratio inspired by the definition of $\epsilon$-DP:
+   To measure empirical privacy loss, we approximate the probability
+   distribution of the residuals $\hat{p}(x)$ using kernel density
+   estimation, and compare the log-ratio inspired by the definition of $\epsilon$-DP:
 
-$$\text{EPL}(x) = \log\left(\hat{p}(x) / \hat{p}(x+1)\right).$$
+   $$\text{EPL}(x) = \log\left(\hat{p}(x) / \hat{p}(x+1)\right).$$
 
-We hypothesized that the EPL of TopDown will be substantially smaller
-than the theoretical guarantee of $\epsilon$.  However, it is possible
-that it will be _much larger_ than $\epsilon$, due to the
-difficult-to-predict impact of including certain invariants. [ref
-invariants paper from Census Bureau]
+   We hypothesized that the EPL of TopDown will be substantially smaller
+   than the theoretical guarantee of $\epsilon$.  However, it is possible
+   that it will be _much larger_ than $\epsilon$, due to the
+   difficult-to-predict impact of including certain invariants. [ref
+   invariants paper from Census Bureau]
 
 3. Search for bias, with our hypothesis that it appears differentially
-with respect to diversity of spatial units.)
+   with respect to diversity of spatial units.
 
-We compare the bias, variance, and privacy to a simpler, but
-not-differentially-private approach to protecting privacy: simple
-random sample of X% total for a range of X.
+We also compared the median absolute error and empirical privacy loss of TopDown to a simpler, but
+not-differentially-private approach to protecting privacy, simple
+random sampling without replacement for a range of sized samples.
+
 
 

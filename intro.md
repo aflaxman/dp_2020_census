@@ -5,9 +5,7 @@ In the United States, the Decennial Census is an important part of
 democratic governance.  Every ten years, the US Census Bureau is
 consititutionally required to count the "whole number of persons in
 each State", and in 2020 this effort is likely to cost over fifteen
-billion dollars.[ref GAO-18-635 Census Bureau Improved the Quality of
-Its Cost Estimation but Additional Steps Are Needed to Ensure
-Reliability] The results will be used for apportioning representation
+billion dollars.[@gao2018census] The results will be used for apportioning representation
 in the US House of Representatives, for dividing federal tax dollars
 between states, as well as for a multitude of other governmental
 activities at the national, state, and local level.  Data from the
@@ -19,11 +17,11 @@ the next decade.[@ruggles2019differential]
 
 The confidentiality of information in the decenial census is also
 constitutionally mandated, and the 2020 US Census will use a novel
-approach to "disclosure avoidance" to protect respondents' data.[ref TopDown draft? something better?] This
+approach to "disclosure avoidance" to protect respondents' data.[ref TopDown draft? something better? https://www.census.gov/newsroom/blogs/research-matters/2019/06/disclosure_avoidance.html] This
 approach builds on Differential Privacy (DP), a mathematical
 definition of privacy and privacy loss that has been developed over
 the last decade and a half in the theoretical computer science and
-cryptography communities.[ref Dwork and Roth, Privacy Book?] Although the new approach allows a more
+cryptography communities.[@dwork2014algorithmic] Although the new approach allows a more
 precise accounting of the noise introduced by the process, it also
 risks reducing the utility of census data---it may produce counts that
 are substantially noisier than the previous discloure avoidance

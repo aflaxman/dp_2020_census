@@ -60,11 +60,12 @@ at the enumeration district level was {sc_privacy_loss_enum_dist_4_0_max_abs},
 at the county level was {sc_privacy_loss_county_4_0_max_abs}, and
 at the state level was {sc_privacy_loss_state_4_0_max_abs}.
 
-FIGURE 1 AROUND HERE
+FIGURE 1 AROUND HERE --- distribution of errors and empirical privacy
+loss for 0.25, 1.0, 4.0 for total count of enumeration district
 
-Compared to 50% sample, ... (Figure 2)
+[Report of which amount of sampling compared to which epsilon for mae, 95-th percentile, and EPL.] (Figure 2)
 
-FIGURE 2 AROUND HERE
+FIGURE 2 AROUND HERE  --- scatter of MAE and max EPL for range of epsilon and sample size
 
 The bias introduced by TopDown varied with diversity index, as
 hypothesized.
@@ -81,7 +82,11 @@ pronounced.
 The size of this bias again decreased as a function of $\epsilon$, from
 tc_bias_county_X_0_25 for $\epsilon = 0.25$ to 
 tc_bias_county_X_4_00 for $\epsilon = 4.0$.
+
+County diversity is correlated with county size [measure of correlation here], and we found a relationship between bias as county size as well.  (Or should figure be simply diversity?  or percent White?)
 (Figure 3)
 
-FIGURE 3 AROUND HERE
+FIGURE 3 AROUND HERE -- error or absolute error on y-axis, diversity or size or whiteness on x
+
+
 
