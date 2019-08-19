@@ -250,7 +250,12 @@ Our Evaluation Approach
    difficult-to-predict impact of including certain invariants.
 
 3. We search for bias in the residuals from (1), with our hypothesis
-   that the DP counts are positively biased for areas with low diversity.
+   that the DP counts are positively biased for areas with low
+   diversity. For each geographic area, we constructed a "homogeneity
+   index" by counting the cells of the detailed query histogram that
+   contained a true count of zero, and we examined the bias (mean
+   residual) of the corresponding counts from TopDown stratified by
+   homogeneity index.
 
 We also compared the median absolute error and empirical privacy loss
 of TopDown to a simpler, but not-differentially-private approach to

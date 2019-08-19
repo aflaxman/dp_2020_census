@@ -2,6 +2,9 @@
 Results
 =======
 
+Error and Privacy of TopDown
+----------------------------
+
 We found error in total count varied as a function of total privacy loss
 budget. For
 $\epsilon = 0.25$ produced median absolute error in TC of {tc_enum_dist_0_25_mae}
@@ -70,21 +73,54 @@ where $p(x)$ is the probability density corresponding to the
 histogram in (a), after smoothing with a Gaussian kernel of bandwidth
 $0.1$.
 
-We found that the MAE and EPL of TopDown were similar to that
-introduced by simple random sampling for $\epsilon \geq 1.0$.
 
-To describe in words:
+Comparison with Error and Privacy of Simple Random Sampling
+-----------------------------------------------------------
 
-Total count
-County
-Enum Dist
-Stratified Count
-State
-County
-Enum Dist
+We found that the MAE and EPL of Simple Random Sampling varied with larger sample size in a manner analogous to the total privacy budget in TopDown, for $\epsilon \geq 1$.  For a 5% sample of the 1940 Census data, we found 
+median absolute error in TC of {tc_enum_dist_5pct_mae} at the enumeration district level,
+ {tc_county_5pct_mae} at the county level, and
+{tc_state_5pct_mae} at the state level;
+a 50% sample produced
+median absolute error in TC of {tc_enum_dist_50pct_mae} at the enumeration district level,
+ {tc_county_50pct_mae} at the county level, and
+{tc_state_50pct_mae} at the state level;
+and a 95% sample produced
+median absolute error in TC of {tc_enum_dist_95pct_mae} at the enumeration district level,
+ {tc_county_95pct_mae} at the county level, and
+{tc_state_95pct_mae} at the state level;
+
+Error in stratified county varied similarly; for a 5% sample, we found
+median absolute error in SC of {sc_enum_dist_5pct_mae} at the enumeration district level,
+ {sc_county_5pct_mae} at the county level, and
+{sc_state_5pct_mae} at the state level;
+a 50% sample produced
+median absolute error in TC of {sc_enum_dist_50pct_mae} at the enumeration district level,
+ {sc_county_50pct_mae} at the county level, and
+{sc_state_50pct_mae} at the state level.
+
+We found empirical privacy loss increased as sample size increased.
+For a 5% sample,
+at the enumeration district level, we found
+EPL of {tc_privacy_loss_enum_dist_5pct_max_abs} for TC and {sc_privacy_loss_enum_dist_5pct_max_abs} for SC,
+and at the county level, we found
+{tc_privacy_loss_county_5pct_max_abs} for TC and {sc_privacy_loss_county_5pct_max_abs} for SC;
+a 50% sample produced
+EPL of {tc_privacy_loss_enum_dist_50pct_max_abs} for TC and {sc_privacy_loss_enum_dist_50pct_max_abs} for SC
+at the enumeration district level,
+and 
+{tc_privacy_loss_county_50pct_max_abs} for TC and {sc_privacy_loss_county_50pct_max_abs} for SC
+at the county level;
+and a 95% sample produced
+EPL of {tc_privacy_loss_enum_dist_95pct_max_abs} for TC and {sc_privacy_loss_enum_dist_95pct_max_abs} for SC
+at the enumeration district level,
+and 
+{tc_privacy_loss_county_95pct_max_abs} for TC and {sc_privacy_loss_county_95pct_max_abs} for SC
+at the county level.
 (Figure 2)
 
 ![](fig_2_td_vs_srs.png "Figure 2 TopDown and Simple Random Sample")
+
 *Figure 2*: The curve with circular markers shows that in TopDown, the
 choice of $\epsilon$ controls the tradeoff between MAE and EPL,
 although for $\epsilon < 1$ there is not much difference in EPL.  The
@@ -96,26 +132,46 @@ $\epsilon = 2.0$ is comparable to a 75% sample (for counts stratified
 by age, race, and ethnicity at the county level; different aggregate
 statistics produce different curves).
 
+Bias in the noise introduced by TopDown
+---------------------------------------
+
 The bias introduced by TopDown varied with diversity index, as
 hypothesized.
-Enumeration districts with only X empty strata had TC
-and SC systematically lower than ground truth, while enumeration
-districts with X empty strata had TC and SC systematically higher.
-The size of this bias decreased as a function of $\epsilon$, from
-tc_bias_enum_dist_X_0_25 for $\epsilon = 0.25$ to 
-tc_bias_enum_dist_X_4_00 for $\epsilon = 4.0$.
+Enumeration districts with homogeneity index 0 (0 empty strata) had TC
+systematically lower than ground truth, while enumeration
+districts with 22 empty strata had TC systematically higher.
+The size of this bias decreased as a function of $\epsilon$.  Homogeneity index 0
+had bias of {tc_enum_dist_0_25_0_bias} people for $\epsilon = 0.25$,
+{tc_enum_dist_1_0_0_bias} people for $\epsilon = 1.0$,
+and {tc_enum_dist_4_0_0_bias} people for $\epsilon = 4.0$;
+while homogeneity index 22
+had bias of {tc_enum_dist_0_25_22_bias} people for $\epsilon = 0.25$,
+{tc_enum_dist_1_0_22_bias} people for $\epsilon = 1.0$,
+and {tc_enum_dist_4_0_22_bias} people for $\epsilon = 4.0$.
 
 Counties displayed the same general pattern, but there are fewer
 counties and they typically have less empty strata, so it was not as
 pronounced.
-The size of this bias again decreased as a function of $\epsilon$, from
-tc_bias_county_X_0_25 for $\epsilon = 0.25$ to 
-tc_bias_county_X_4_00 for $\epsilon = 4.0$.
-
-County diversity is correlated with county size [measure of correlation here], and we found a relationship between bias as county size as well.  (Or should figure be simply diversity?  or percent White?)
+The size of this bias again decreased as a function of $\epsilon$.
+homogeneity index 0
+had bias of {tc_county_0_25_0_bias} people for $\epsilon = 0.25$,
+{tc_county_1_0_0_bias} people for $\epsilon = 1.0$,
+and {tc_county_4_0_0_bias} people for $\epsilon = 4.0$;
+while homogeneity index 22
+had bias of {tc_county_0_25_22_bias} people for $\epsilon = 0.25$,
+{tc_county_1_0_22_bias} people for $\epsilon = 1.0$,
+and {tc_county_4_0_22_bias} people for $\epsilon = 4.0$.
 (Figure 3)
 
-FIGURE 3 AROUND HERE -- error or absolute error on y-axis, diversity or size or whiteness on x
+![](fig_3_homogeneity_bias.png "Figure 3 Homogeneity Bias")
+
+*Figure 3*: The homogeneity index is associated with the residual
+ (difference between the count estimated by TopDown and the true
+ count).  This plot shows the association for enumeration districts,
+ and a similar relationship holds at the county level.  As $\epsilon$
+ increases, the scale of the bias decreases; this plot shows $\epsilon
+ = 1.0$.
+
 
 
 

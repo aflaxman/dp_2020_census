@@ -5,7 +5,7 @@ In the United States, the Decennial Census is an important part of
 democratic governance.  Every ten years, the US Census Bureau is
 consititutionally required to count the "whole number of persons in
 each State", and in 2020 this effort is likely to cost over fifteen
-billion dollars.[@garfinkel2019understanding, @gao2018census] The results will be used for apportioning representation
+billion dollars.[@garfinkel2019understanding][@gao2018census] The results will be used for apportioning representation
 in the US House of Representatives, for dividing federal tax dollars
 between states, as well as for a multitude of other governmental
 activities at the national, state, and local level.  Data from the
@@ -32,7 +32,7 @@ To date, there is a lack of empirical examination of DP in census DAS,
 but the approach was applied to the 2018 end-to-end test of the
 decennial census, and computer code used for this test as well as
 accompaning exposition has recently been released publicly by the
-Census Bureau.[@abowd2018disclosure, @boyd2019differential]
+Census Bureau.[@abowd2018disclosure][@boyd2019differential]
 
 We used the recently released code, preprints, and data files to
 quantify the error introduced by the E2E disclosure avoidance system
@@ -296,7 +296,12 @@ Our Evaluation Approach
    difficult-to-predict impact of including certain invariants.
 
 3. We search for bias in the residuals from (1), with our hypothesis
-   that the DP counts are positively biased for areas with low diversity.
+   that the DP counts are positively biased for areas with low
+   diversity. For each geographic area, we constructed a "homogeneity
+   index" by counting the cells of the detailed query histogram that
+   contained a true count of zero, and we examined the bias (mean
+   residual) of the corresponding counts from TopDown stratified by
+   homogeneity index.
 
 We also compared the median absolute error and empirical privacy loss
 of TopDown to a simpler, but not-differentially-private approach to
@@ -310,6 +315,9 @@ data.
 
 Results
 =======
+
+Error and Privacy of TopDown
+----------------------------
 
 We found error in total count varied as a function of total privacy loss
 budget. For
@@ -379,21 +387,54 @@ where $p(x)$ is the probability density corresponding to the
 histogram in (a), after smoothing with a Gaussian kernel of bandwidth
 $0.1$.
 
-We found that the MAE and EPL of TopDown were similar to that
-introduced by simple random sampling for $\epsilon \geq 1.0$.
 
-To describe in words:
+Comparison with Error and Privacy of Simple Random Sampling
+-----------------------------------------------------------
 
-Total count
-County
-Enum Dist
-Stratified Count
-State
-County
-Enum Dist
+We found that the MAE and EPL of Simple Random Sampling varied with larger sample size in a manner analogous to the total privacy budget in TopDown, for $\epsilon \geq 1$.  For a 5% sample of the 1940 Census data, we found 
+median absolute error in TC of 74 at the enumeration district level,
+ 388 at the county level, and
+3883 at the state level;
+a 50% sample produced
+median absolute error in TC of 17 at the enumeration district level,
+ 90 at the county level, and
+932 at the state level;
+and a 95% sample produced
+median absolute error in TC of 4 at the enumeration district level,
+ 20 at the county level, and
+130 at the state level;
+
+Error in stratified county varied similarly; for a 5% sample, we found
+median absolute error in SC of 18 at the enumeration district level,
+ 19 at the county level, and
+41 at the state level;
+a 50% sample produced
+median absolute error in TC of 4 at the enumeration district level,
+ 5 at the county level, and
+9 at the state level.
+
+We found empirical privacy loss increased as sample size increased.
+For a 5% sample,
+at the enumeration district level, we found
+EPL of 0.020 for TC and 0.098 for SC,
+and at the county level, we found
+0.035 for TC and 0.034 for SC;
+a 50% sample produced
+EPL of 0.079 for TC and 0.318 for SC
+at the enumeration district level,
+and 
+0.082 for TC and 0.150 for SC
+at the county level;
+and a 95% sample produced
+EPL of 0.314 for TC and 1.333 for SC
+at the enumeration district level,
+and 
+0.429 for TC and 0.612 for SC
+at the county level.
 (Figure 2)
 
 ![](fig_2_td_vs_srs.png "Figure 2 TopDown and Simple Random Sample")
+
 *Figure 2*: The curve with circular markers shows that in TopDown, the
 choice of $\epsilon$ controls the tradeoff between MAE and EPL,
 although for $\epsilon < 1$ there is not much difference in EPL.  The
@@ -405,57 +446,120 @@ $\epsilon = 2.0$ is comparable to a 75% sample (for counts stratified
 by age, race, and ethnicity at the county level; different aggregate
 statistics produce different curves).
 
+Bias in the noise introduced by TopDown
+---------------------------------------
+
 The bias introduced by TopDown varied with diversity index, as
 hypothesized.
-Enumeration districts with only X empty strata had TC
-and SC systematically lower than ground truth, while enumeration
-districts with X empty strata had TC and SC systematically higher.
-The size of this bias decreased as a function of $\epsilon$, from
-tc_bias_enum_dist_X_0_25 for $\epsilon = 0.25$ to 
-tc_bias_enum_dist_X_4_00 for $\epsilon = 4.0$.
+Enumeration districts with homogeneity index 0 (0 empty strata) had TC
+systematically lower than ground truth, while enumeration
+districts with 22 empty strata had TC systematically higher.
+The size of this bias decreased as a function of $\epsilon$.  Homogeneity index 0
+had bias of -52.6 people for $\epsilon = 0.25$,
+-18.9 people for $\epsilon = 1.0$,
+and -6.6 people for $\epsilon = 4.0$;
+while homogeneity index 22
+had bias of 8.7 people for $\epsilon = 0.25$,
+3.6 people for $\epsilon = 1.0$,
+and 1.5 people for $\epsilon = 4.0$.
 
 Counties displayed the same general pattern, but there are fewer
 counties and they typically have less empty strata, so it was not as
 pronounced.
-The size of this bias again decreased as a function of $\epsilon$, from
-tc_bias_county_X_0_25 for $\epsilon = 0.25$ to 
-tc_bias_county_X_4_00 for $\epsilon = 4.0$.
-
-County diversity is correlated with county size [measure of correlation here], and we found a relationship between bias as county size as well.  (Or should figure be simply diversity?  or percent White?)
+The size of this bias again decreased as a function of $\epsilon$.
+homogeneity index 0
+had bias of -103.7 people for $\epsilon = 0.25$,
+-33.9 people for $\epsilon = 1.0$,
+and -10.4 people for $\epsilon = 4.0$;
+while homogeneity index 22
+had bias of 23.4 people for $\epsilon = 0.25$,
+14.5 people for $\epsilon = 1.0$,
+and 6.0 people for $\epsilon = 4.0$.
 (Figure 3)
 
-FIGURE 3 AROUND HERE -- error or absolute error on y-axis, diversity or size or whiteness on x
+![](fig_3_homogeneity_bias.png "Figure 3 Homogeneity Bias")
+
+*Figure 3*: The homogeneity index is associated with the residual
+ (difference between the count estimated by TopDown and the true
+ count).  This plot shows the association for enumeration districts,
+ and a similar relationship holds at the county level.  As $\epsilon$
+ increases, the scale of the bias decreases; this plot shows $\epsilon
+ = 1.0$.
+
 
 
 
 Discussion
 ==========
 
-TopDown introduced near minimal noise, but created a quantifiable
-amount of bias.  Bias disproportionately affected small, homogeneous
-districts; cities of sufficient size will not notice who they have
-lost, but rural districts likely *will* notice the population count
-(and appropriations) that they have gained.  The new DAS affords
+For $\epsilon \geq 1.0$, TopDown introduced near minimal noise and
+attained empirical privacy loss almost 10 times less than $\epsilon$,
+but created a quantifiable amount of bias.  The bias increased the
+reported counts in homogeneous districts while decreasing the counts
+in racially and ethnically mixed districts; since the errors are
+similar in *absolute* scale, cities of sufficient size will likely not
+notice who they have lost, but rural districts likely *will* notice or
+at least benefit from the population count (and appropriations) that
+they have gained.  The TopDown algorithm will likely drive some
 redistribution of resources from diverse urban communities to
 segregated rural communities.
 
-Quality Assurance and the correct count process.
+The small communities that are likely to have upward bias in their
+TopDown counts will be the ones small enough to benefit from the
+quality Assurance processes that have been implemented in past
+censuses, such as the Count Question Resolution program, and the
+results in this paper can help anticipate and plan for this process.
 
-Emergency preparedness and other routine tasks.
+Accurate counts in small communities are important for emergency
+preparedness and other routine planning tasks performed by state and
+local goverment demographers, and this work may help to understand how
+such work will be affected by the shift to a DP disclosure avoidance
+system.
 
-Research tasks, e.g. segregation research and how it may be hampered.
-On the other hand, human subject research requires informed consent
-(Belmont Principles); de-identified data is not HSR, but if it is
-re-identifiable, it should not be considered de-identified, should it?
+This work has not investigated more detailed research uses of
+decennial census data in social research tasks, such as segregation
+research, and how this may be affected by TopDown.  On the other hand,
+human subject research requires informed consent (Belmont Principles);
+de-identified data is not HSR, but if it is re-identifiable, it should
+not be considered de-identified, should it?
 
-Survey weights.
+Another important use of decennial census data is in constructing
+control populations and survey weights for survey sampling of the US
+population for health, political, and public opinion polling.  This
+work provides some evidence on how TopDown may affect this work, but
+further work is warranted.
 
-Need for continued discussion.
+This work still fits into the beginning of a discussion on how to best
+balance privacy and accuracy in decennial census data collection, and
+there is a need for continued discussion.  This need must be balanced
+against a risky sort of observer bias---attitude surveys have found
+that calling attention to the privacy and confidentiality of census
+responses, even if done in a positive manner, reduce willingness to
+answer census questions.[ref]
 
 Limitations
 -----------
 
-To Come
+There are many differences between the 1940 census data and the 2020
+data to be collected next year. Number of geographic levels, number of
+strata to be included in detailed queries.
+
+Additional changes are being planned, HDMM instead of geometric
+mechanism, for example.
+
+Our approach to quantifying error focused on the median absolute
+error, and there are important tails to this distribution as well.
+
+Our empirical privacy loss is not comprehensive, and there is the
+possibility that some other perturbation or some other test statistic
+would reveal a larger privacy loss than we have found with our
+approach.  Our approach also assumes that the residuals for different
+locations is generalizable to the residuals from the same location
+when run with different data.  Although these are certainly different,
+it is likely that the difference is sufficiently small as to not
+affect our estimates substantially.
+
+
 
 
 
