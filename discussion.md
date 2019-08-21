@@ -21,7 +21,7 @@ results in this paper can help anticipate and plan for this process.
 
 Accurate counts in small communities are important for emergency
 preparedness and other routine planning tasks performed by state and
-local goverment demographers, and this work may help to understand how
+local government demographers, and this work may help to understand how
 such work will be affected by the shift to a DP disclosure avoidance
 system.
 
@@ -67,6 +67,11 @@ locations is generalizable to the residuals from the same location
 when run with different data.  Although these are certainly different,
 it is likely that the difference is sufficiently small as to not
 affect our estimates substantially.
+
+Conclusion
+==========
+
+DP in census, what will it be?  Opportunity to have something that balances privacy and accuracy, but this opportunity is not without risks.
 
 
 

@@ -5,40 +5,44 @@ Results
 Error and Privacy of TopDown
 ----------------------------
 
-We found error in total count varied as a function of total privacy loss
-budget. For
-$\epsilon = 0.25$ produced median absolute error in TC of {tc_enum_dist_0_25_mae}
-at the enumeration district level and {tc_county_0_25_mae} at the
-county level;
-$\epsilon = 1.0$ produced median absolute error in TC of {tc_enum_dist_1_0_mae}
-at the enumeration district level and {tc_county_1_0_mae} at the
-county level;
-and $\epsilon = 4.0$ produced median absolute error in TC of {tc_enum_dist_4_0_mae}
-at the enumeration district level and {tc_county_4_0_mae} at the
-county level (Full table in Supplementary Appendix 1).
-At the state level, there was TC error of $0.0$, as expected from the
-state TC invariant. (Figure 1)
+We found error in total count (TC) varied as a function of total
+privacy loss budget. Running TopDown with $\epsilon = 0.25$ produced
+median absolute error in TC of {tc_enum_dist_0_25_mae} at the
+enumeration district level and {tc_county_0_25_mae} at the county
+level; $\epsilon = 1.0$ produced median absolute error in TC of
+{tc_enum_dist_1_0_mae} at the enumeration district level and
+{tc_county_1_0_mae} at the county level; and $\epsilon = 4.0$ produced
+median absolute error in TC of {tc_enum_dist_4_0_mae} at the
+enumeration district level and {tc_county_4_0_mae} at the county level
+(Full table in Supplementary Appendix 1).  At the state level, there
+was TC error of $0.0$, as expected from the state TC invariant.  The
+median TC was {tc_enum_dist_count_median} for enumeration districts,
+{tc_county_count_median} for counties, and {tc_state_count_median} for
+states.
 
-Error in stratified count varied similarly; When
-$\epsilon = 0.25$, the median absolute error in SC
-at the enumeration district level was {sc_enum_dist_0_25_mae} people,
-at the county level was {sc_county_0_25_mae} people, and
-at the state level was {sc_state_0_25_mae} people;
-for $\epsilon = 1.0$, the median absolute error in SC
-at the enumeration district level was {sc_enum_dist_1_0_mae} people,
-at the county level was {sc_county_1_0_mae} people, and
-at the state level was {sc_state_1_0_mae} people; and
-for $\epsilon = 4.00$, the median absolute error in SC
-at the enumeration district level was {sc_enum_dist_4_0_mae} people,
-at the county level was {sc_county_4_0_mae} people, and
-at the state level was {sc_state_4_0_mae} people.
+Error in stratified count (SC) varied similarly; When $\epsilon =
+0.25$, the median absolute error in SC at the enumeration district
+level was {sc_enum_dist_0_25_mae} people, at the county level was
+{sc_county_0_25_mae} people, and at the state level was
+{sc_state_0_25_mae} people; for $\epsilon = 1.0$, the median absolute
+error in SC at the enumeration district level was
+{sc_enum_dist_1_0_mae} people, at the county level was
+{sc_county_1_0_mae} people, and at the state level was
+{sc_state_1_0_mae} people; and for $\epsilon = 4.00$, the median
+absolute error in SC at the enumeration district level was
+{sc_enum_dist_4_0_mae} people, at the county level was
+{sc_county_4_0_mae} people, and at the state level was
+{sc_state_4_0_mae} people. The median SC was
+{sc_enum_dist_count_median} for enumeration districts,
+{sc_county_count_median} for counties, and {sc_state_count_median} for
+states.  (Figure 1)
 
 We found that the empirical privacy loss was often substantially
 smaller than the privacy loss budget.
 For $\epsilon = 0.25$, the empirical privacy loss for TC
 at the enumeration district level was {tc_privacy_loss_enum_dist_0_25_max_abs}
 and at the county level was {tc_privacy_loss_county_0_25_max_abs}
-(at the state level empirical privacy loss is undefined, since the invariant makes all error zero);
+(at the state level empirical privacy loss is undefined, since the invariant makes all residuals zero);
 for $\epsilon = 1.0$, the empirical privacy loss for TC
 at the enumeration district level was {tc_privacy_loss_enum_dist_1_0_max_abs}
 and at the county level was {tc_privacy_loss_county_1_0_max_abs}; and
@@ -65,7 +69,7 @@ at the state level was {sc_privacy_loss_state_4_0_max_abs}.
 
 ![](fig_1_hist_epl.png "Figure 1 Error Histogram and Empirical Privacy Loss Function")
 
-*Figure 1*: Panel (a) shows the distribution of error (DP - True) for
+*Figure 1*: Panel (a) shows the distribution of residuals (DP - Exact) for
 stratified counts at the enumeration district level, stratified by
 age, race, and ethnicity; and panel (b) shows the empirical privacy
 loss, $EPL(x) = \log\left(p(x) / p(x+1)\right),$
@@ -130,7 +134,7 @@ TopDown with $\epsilon = 1.0$ provides privacy loss and estimation
 error similar to a sample of 50% of the 1940 census data, while
 $\epsilon = 2.0$ is comparable to a 75% sample (for counts stratified
 by age, race, and ethnicity at the county level; different aggregate
-statistics produce different curves).
+statistics produce different comparisons).
 
 Bias in the noise introduced by TopDown
 ---------------------------------------

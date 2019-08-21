@@ -1,9 +1,19 @@
+Acronyms
+========
+
+* DP - differentially private
+* E2E - end-to-end
+* TC - total count
+* SC - stratified count
+* MAE - median absolute error
+* EPL - empirical privacy loss
+
 Introduction
 ============
 
 In the United States, the Decennial Census is an important part of
 democratic governance.  Every ten years, the US Census Bureau is
-consititutionally required to count the "whole number of persons in
+constitutionally required to count the "whole number of persons in
 each State", and in 2020 this effort is likely to cost over fifteen
 billion dollars.[@garfinkel2019understanding][@gao2018census] The results will be used for apportioning representation
 in the US House of Representatives, for dividing federal tax dollars
@@ -15,32 +25,32 @@ inform strategic decisions in the private and non-profit sectors, and
 facilitate the accurate weighting of subsequent population surveys for
 the next decade.[@ruggles2019differential]
 
-The confidentiality of information in the decenial census is also
+The confidentiality of information in the decennial census is also
 constitutionally mandated, and the 2020 US Census will use a novel
 approach to "disclosure avoidance" to protect respondents' data.[@abowd2018disclosure] This
-approach builds on Differential Privacy (DP), a mathematical
+approach builds on Differential Privacy, a mathematical
 definition of privacy and privacy loss that has been developed over
 the last decade and a half in the theoretical computer science and
 cryptography communities.[@dwork2014algorithmic] Although the new approach allows a more
 precise accounting of the noise introduced by the process, it also
 risks reducing the utility of census data---it may produce counts that
-are substantially noisier than the previous discloure avoidance
+are substantially noisier than the previous disclosure avoidance
 system, which was based on a technique called swapping, and relied on
 the detailed of the swapping procedure being secret.[@mckenna2018disclosure]
 
-To date, there is a lack of empirical examination of DP in census DAS,
-but the approach was applied to the 2018 end-to-end test of the
+To date, there is a lack of empirical examination of the new disclosure avoidance system
+but the approach was applied to the 2018 end-to-end (E2E) test of the
 decennial census, and computer code used for this test as well as
-accompaning exposition has recently been released publicly by the
+accompanying exposition has recently been released publicly by the
 Census Bureau.[@abowd2018disclosure][@boyd2019differential]
 
-We used the recently released code, preprints, and data files to
+We used the recently released code, preprints, and data files to understand and
 quantify the error introduced by the E2E disclosure avoidance system
-when Census Bureau used it to guarantee differential privacy for the
-1940 US Census (for which the full data has previously been released)
-at a range of privacy loss budgets.  We also developed an empirical
+when Census Bureau applied it to 1940 census data
+(for which the full data has previously been released)
+for a range of privacy loss budgets.  We also developed an empirical
 measure of privacy loss and used it to compare the error and privacy
-of the DP approach to that of a simple-random-sampling approach to
+of the new approach to that of a simple-random-sampling approach to
 protecting privacy.
 
 
@@ -69,12 +79,12 @@ $$
 Differential privacy is a characteristic of an algorithm; it is not a
 specific algorithm. For census counting tasks such a producing
 histograms of the total count of people in each state, or counts of
-people stratified by census block, age, sex, race, and ethnicity,
+people stratified by census block, age-group, race, and ethnicity,
 differential privacy is often implemented by adding noise to the
 counts.
 
 The new disclosure avoidance system for the 2020 US Census is designed
-to be DP and to mantain the accuracy of census
+to be DP and to maintain the accuracy of census
 counts. To complicate things beyond the typical challenge faced in
 DP algorithm design, there are certain counts in
 the census that will be published exactly as enumerated, without any
@@ -84,13 +94,12 @@ count for each state and the number of households in each enumeration
 district where invariants.  There are also inequalities that will be
 enforced, such as requiring the total count of people in an
 enumeration district to be greater or equal to the number of occupied
-households in that district.  We will refer to the invariants and other
-inequalities collectively as the "public properties" of the database.
+households in that district.
 
 _TopDown algorithm._ At a high level,
 the census approach to this challenge repeats two steps for multiple
 levels of a geographic hierarchy (from the top down, hence their name
-`TopDown`). The first step (Noisy Histogram) adds noise from a carefully chosen
+"TopDown"). The first step (Noisy Histogram) adds noise from a carefully chosen
 distribution to the data counts.
 This produces a set of
 noisy counts. The noisy counts might have negative counts or
@@ -101,10 +110,10 @@ represent the invariants, inequalities, consistency with the DP counts
 from one level higher, and non-negativity. The solution to
 this constrained optimization is as close to the noisy counts as
 possible while also satisfying internal consistency.
-The final output of the TopDown algorithm is a synthetic
+The final output of TopDown is a synthetic
 data set that has data counts matching the values that minimize
-the constrained optimization.  This satisfies $\epsilon$-DP
-and also the invariants and inequalities using an approach that affords detailed
+the constrained optimization.  This is $\epsilon$-DP
+and also satisfies the invariants and inequalities using an approach that affords detailed
 control of how the privacy budget is distributed between and within levels
 of the hierarchy.
 
@@ -113,7 +122,7 @@ county, census tracts, block groups, and blocks. The census's
 DP algorithm uses a top-down approach to create
 the synthetic data; steps one and two are performed six times,
 from the coarsest to the finest level. Each level is assigned a
-privacy budget $\epsilon_i$ and the entire algorithm is provably
+privacy budget $\epsilon_i$ and the entire algorithm achieves
 $\epsilon$-DP for $\epsilon=\sum_{i=1}^6
 \epsilon_i.$
 
@@ -132,9 +141,9 @@ enumeration district 107). Step one adds geometrically distributed
 random noise to numbers in each box according to the privacy budget at
 the level $\epsilon_i$. This noisy data is unsatisfactory because the
 noisy counts (i) are sometimes negative, (ii) do not satisfy the
-public properties, and (iii) are inconsistent with the synthetic data
+invariants or inequalities, and (iii) are inconsistent with the synthetic data
 produced at the coarser level (e.g. the sum of the noisy counts in all
-the boxes corresponding to a census tracts within Cook county may not
+the boxes corresponding to a census tract within Cook county may not
 equal the number of people in Cook County reported in the synthetic
 data produced in the previous level.) Step two solves an
 optimization problem which adjusts the counts in boxes so that they
@@ -186,7 +195,7 @@ where $G(z)$ denotes the geometric distribution,
 
 $$\Pr[G(z)=k] = \frac{(1 - \exp(-z))\exp(-z|k|)}{1 + \exp(-z)}.$$
 
-Note the noisy counts and noisy aggregate statistics are unbiased
+The noisy counts and noisy aggregate statistics are unbiased
 estimates with variance $(1-\exp(-z))^2/ (2 \exp(-z))$, where $z$ is
 the parameter for the geometric noise added. A higher privacy budget
 means the noise added is more concentrated around zero, and therefore
@@ -196,10 +205,11 @@ which statistics are the most private/least accurate (low fraction of
 the budget) and the most accurate/least private (high fraction of the
 budget).
 
-Note that the noise added to each histogram count comes from the same
-distribution; the noise does not scale with the magnitude of count,
-e.g. adding one hundred people to the count of age 18 and older
-non-Hispanic Whites is just as likely as adding one hundred people
+The noise added to each histogram count comes from the same
+distribution, and is independent of all other added noise;
+the noise does not scale with the magnitude of count,
+e.g. adding 23 people to the count of age 18 and older
+non-Hispanic Whites is just as likely as adding 23 people
 to the count of age under 18 Hispanic Native Americans, even though the
 population of the latter is smaller.
 
@@ -229,21 +239,22 @@ for the noisy values constructed by adding noise from a lower variance
 geometric distribution.
 
 The solution to this optimization is not necessarily integral, however,
-and the TopDown algorithm uses a second optimization step to round
+and TopDown uses a second optimization step to round
 fractional counts to integers. In this optimization, the linear
-equations and inequalities are the same as from the previous
+equations and inequalities all correspond to those in the previous
 optimization, and the objective function is changed to minimize $(1 -
 2(x_i - \lfloor x_i \rfloor)) z_i$, where each $x_i$ corresponds to a
 (potentially non-integer) detailed query count given in the synthetic
-data and $z_i$ required to take an integer value of 0 or 1, where $z_i
+data and $z_i$ is required to take an integer value of 0 or 1, where $z_i
 = 0$ implies $x_i$ should be rounded down and $z_i = 1$ implies that
 $x_i$ should be rounded up.
 
 TopDown options still to be selected
 ------------------------------------
 
-The 7 key policy choices, and how they were set in the 2018 end-to-end
-test when run on the 1940s Census data:
+There are 7 key choices in implementing TopDown, that balance accuracy
+and privacy. We list them here, and state how they were set in the
+2018 end-to-end test when run on the 1940s Census data:
 
 1. Overall privacy. A range of $\epsilon$ values, with $\{0.25, 0.50,
    0.75, 1.0, 2.0, 4.0, 8.0\}$ used in the E2E test run on the 1940
@@ -254,12 +265,15 @@ test when run on the 1940s Census data:
    between national, state, county, and enumeration district.
 
 3. What DP Queries to include. In the test, two DP Queries were
-   included: age/race/ethnicity (i.e. aggregating over group quarters)
-   and gq (i.e. number free-living and number not)
+   included: (i) counts stratified by age-group/race/ethnicity (in
+   other words, aggregating over "group quarters" type); and (ii) the
+   group-quarters counts, which tally the number of people free-living and
+   number in institutional and non-institutional facilities.
 
-4. At each level, how to split level-budget detailed DP. The test run
-   used 10% for detailed queries, 22.5% for group quarters; and 67.5% for
-   age/race/ethnicity.
+4. At each level, how to split level-budget between detailed queries
+   and DP queries. The test run used 10% for detailed queries, 22.5%
+   for group quarters; and 67.5% for
+   age-group-/race-/ethnicity-stratified counts.
 
 5. What invariants to include. The test run held the total count at
    the national and state level invariant.
@@ -276,17 +290,19 @@ test when run on the 1940s Census data:
 Our Evaluation Approach
 -----------------------
 
-1. We calculated residuals and summarized their distribution
-   by its median absolute error (MAE) for total count and
-   age/race/ethnicity stratified count at the state, county, and
-   enum_district level.  We also summarized the size of these counts to
-   understand relative error as well as the absolute error introduced by
-   TopDown.
+1. We calculated residuals (DP count minus exact count) and summarized
+   their distribution by its median absolute error (MAE) for total
+   count (TC) and age/race/ethnicity stratified count (SC) at the
+   state, county, and enumeration-district level.  We also summarized
+   the size of these counts to understand relative error as well as
+   the absolute error introduced by TopDown.
 
-2. We calculate a measure of "empirical privacy loss", inspired by the definition of differential privacy.
-   To measure empirical privacy loss, we approximate the probability
-   distribution of the residuals $\hat{p}(x)$ using kernel density
-   estimation, and compare the log-ratio inspired by the definition of $\epsilon$-DP:
+2. We calculated a measure of "empirical privacy loss", inspired by the
+   definition of differential privacy.  To measure empirical privacy
+   loss, we approximate the probability distribution of the residuals
+   $\hat{p}(x)$ using Gaussian kernel density estimation with a
+   bandwidth of 0.1, and compare the log-ratio inspired by the
+   definition of $\epsilon$-DP algorithms:
 
    $$\text{EPL}(x) = \log\left(\hat{p}(x) / \hat{p}(x+1)\right).$$
 
@@ -295,7 +311,7 @@ Our Evaluation Approach
    that it will be _much larger_ than $\epsilon$, due to the
    difficult-to-predict impact of including certain invariants.
 
-3. We search for bias in the residuals from (1), with our hypothesis
+3. We searched for bias in the residuals from (1), with our hypothesis
    that the DP counts are positively biased for areas with low
    diversity. For each geographic area, we constructed a "homogeneity
    index" by counting the cells of the detailed query histogram that
@@ -319,40 +335,44 @@ Results
 Error and Privacy of TopDown
 ----------------------------
 
-We found error in total count varied as a function of total privacy loss
-budget. For
-$\epsilon = 0.25$ produced median absolute error in TC of 56
-at the enumeration district level and 81 at the
-county level;
-$\epsilon = 1.0$ produced median absolute error in TC of 15
-at the enumeration district level and 24 at the
-county level;
-and $\epsilon = 4.0$ produced median absolute error in TC of 4
-at the enumeration district level and 7 at the
-county level (Full table in Supplementary Appendix 1).
-At the state level, there was TC error of $0.0$, as expected from the
-state TC invariant. (Figure 1)
+We found error in total count (TC) varied as a function of total
+privacy loss budget. Running TopDown with $\epsilon = 0.25$ produced
+median absolute error in TC of 56 at the
+enumeration district level and 81 at the county
+level; $\epsilon = 1.0$ produced median absolute error in TC of
+15 at the enumeration district level and
+24 at the county level; and $\epsilon = 4.0$ produced
+median absolute error in TC of 4 at the
+enumeration district level and 7 at the county level
+(Full table in Supplementary Appendix 1).  At the state level, there
+was TC error of $0.0$, as expected from the state TC invariant.  The
+median TC was 865 for enumeration districts,
+18679 for counties, and 1903133 for
+states.
 
-Error in stratified count varied similarly; When
-$\epsilon = 0.25$, the median absolute error in SC
-at the enumeration district level was 17 people,
-at the county level was 16 people, and
-at the state level was 18 people;
-for $\epsilon = 1.0$, the median absolute error in SC
-at the enumeration district level was 6 people,
-at the county level was 6 people, and
-at the state level was 7 people; and
-for $\epsilon = 4.00$, the median absolute error in SC
-at the enumeration district level was 2 people,
-at the county level was 2 people, and
-at the state level was 2 people.
+Error in stratified count (SC) varied similarly; When $\epsilon =
+0.25$, the median absolute error in SC at the enumeration district
+level was 17 people, at the county level was
+16 people, and at the state level was
+18 people; for $\epsilon = 1.0$, the median absolute
+error in SC at the enumeration district level was
+6 people, at the county level was
+6 people, and at the state level was
+7 people; and for $\epsilon = 4.00$, the median
+absolute error in SC at the enumeration district level was
+2 people, at the county level was
+2 people, and at the state level was
+2 people. The median SC was
+88 for enumeration districts,
+47 for counties, and 229 for
+states.  (Figure 1)
 
 We found that the empirical privacy loss was often substantially
 smaller than the privacy loss budget.
 For $\epsilon = 0.25$, the empirical privacy loss for TC
 at the enumeration district level was 0.024
 and at the county level was 0.031
-(at the state level empirical privacy loss is undefined, since the invariant makes all error zero);
+(at the state level empirical privacy loss is undefined, since the invariant makes all residuals zero);
 for $\epsilon = 1.0$, the empirical privacy loss for TC
 at the enumeration district level was 0.085
 and at the county level was 0.081; and
@@ -379,7 +399,7 @@ at the state level was 0.531.
 
 ![](fig_1_hist_epl.png "Figure 1 Error Histogram and Empirical Privacy Loss Function")
 
-*Figure 1*: Panel (a) shows the distribution of error (DP - True) for
+*Figure 1*: Panel (a) shows the distribution of residuals (DP - Exact) for
 stratified counts at the enumeration district level, stratified by
 age, race, and ethnicity; and panel (b) shows the empirical privacy
 loss, $EPL(x) = \log\left(p(x) / p(x+1)\right),$
@@ -444,7 +464,7 @@ TopDown with $\epsilon = 1.0$ provides privacy loss and estimation
 error similar to a sample of 50% of the 1940 census data, while
 $\epsilon = 2.0$ is comparable to a 75% sample (for counts stratified
 by age, race, and ethnicity at the county level; different aggregate
-statistics produce different curves).
+statistics produce different comparisons).
 
 Bias in the noise introduced by TopDown
 ---------------------------------------
@@ -512,7 +532,7 @@ results in this paper can help anticipate and plan for this process.
 
 Accurate counts in small communities are important for emergency
 preparedness and other routine planning tasks performed by state and
-local goverment demographers, and this work may help to understand how
+local government demographers, and this work may help to understand how
 such work will be affected by the shift to a DP disclosure avoidance
 system.
 
@@ -559,6 +579,11 @@ when run with different data.  Although these are certainly different,
 it is likely that the difference is sufficiently small as to not
 affect our estimates substantially.
 
+Conclusion
+==========
+
+DP in census, what will it be?  Opportunity to have something that balances privacy and accuracy, but this opportunity is not without risks.
+
 
 
 
@@ -567,5 +592,6 @@ affect our estimates substantially.
 
 
 References
--------------
+==========
+
 
