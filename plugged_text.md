@@ -1,3 +1,9 @@
+Differential privacy in the 2020 US census, what will it do? Quantifying the accuracy/privacy tradeoff
+======================================================================================================
+
+Samantha Petti and Abraham D. Flaxman, 2019-08-22
+
+
 Acronyms
 ========
 
@@ -29,7 +35,7 @@ The confidentiality of information in the decennial census is also
 constitutionally mandated, and the 2020 US Census will use a novel
 approach to "disclosure avoidance" to protect respondents' data.[@abowd2018disclosure] This
 approach builds on Differential Privacy, a mathematical
-definition of privacy and privacy loss that has been developed over
+definition of privacy that has been developed over
 the last decade and a half in the theoretical computer science and
 cryptography communities.[@dwork2014algorithmic] Although the new approach allows a more
 precise accounting of the noise introduced by the process, it also
@@ -67,7 +73,7 @@ which quantifies how much privacy loss is allowed, meaning how much
 can one person's data to affect the analysis.
 
 To be precise, randomized algorithm $\mathcal{A}$ is
-$\epsilon$-differentially private if, for each possible output
+$\epsilon$-DP if, for each possible output
 $\mathcal{P}$, for any pair of datasets $D$ and $D'$ that are the same
 everywhere except for on one person's data,
 $$
@@ -77,11 +83,9 @@ $$
 $$
 
 Differential privacy is a characteristic of an algorithm; it is not a
-specific algorithm. For census counting tasks such a producing
-histograms of the total count of people in each state, or counts of
-people stratified by census block, age-group, race, and ethnicity,
-differential privacy is often implemented by adding noise to the
-counts.
+specific algorithm. Algorithms often achieve
+differential privacy by adding random noise to the exact, but non-DP
+output.[@dwork2014algorithmic]
 
 The new disclosure avoidance system for the 2020 US Census is designed
 to be DP and to maintain the accuracy of census
@@ -91,75 +95,40 @@ the census that will be published exactly as enumerated, without any
 variation caused by adding noise.  These _invariants_ have not been selected
 for the 2020 decennial census yet, but in the 2018 end-to-end (E2E) test, the total
 count for each state and the number of households in each enumeration
-district where invariants.  There are also inequalities that will be
+district were invariants.  There are also inequalities that will be
 enforced, such as requiring the total count of people in an
 enumeration district to be greater or equal to the number of occupied
-households in that district.
+households in that district.[@garfinkel2019end]
 
-_TopDown algorithm._ At a high level,
-the census approach to this challenge repeats two steps for multiple
-levels of a geographic hierarchy (from the top down, hence their name
-"TopDown"). The first step (Noisy Histogram) adds noise from a carefully chosen
-distribution to the data counts.
-This produces a set of
-noisy counts. The noisy counts might have negative counts or
-violate invariants or other inequalities.  The second step (Optimize) finds the
-tuned-up histogram that minimizes a quadratic objective function, subject to
-constraints from a system of linear equations and inequalities that
-represent the invariants, inequalities, consistency with the DP counts
-from one level higher, and non-negativity. The solution to
-this constrained optimization is as close to the noisy counts as
-possible while also satisfying internal consistency.
-The final output of TopDown is a synthetic
-data set that has data counts matching the values that minimize
-the constrained optimization.  This is $\epsilon$-DP
-and also satisfies the invariants and inequalities using an approach that affords detailed
-control of how the privacy budget is distributed between and within levels
-of the hierarchy.
-
-The census data has six geographic levels, nested hierarchically: national, state,
-county, census tracts, block groups, and blocks. The census's
-DP algorithm uses a top-down approach to create
-the synthetic data; steps one and two are performed six times,
-from the coarsest to the finest level. Each level is assigned a
-privacy budget $\epsilon_i$ and the entire algorithm achieves
-$\epsilon$-DP for $\epsilon=\sum_{i=1}^6
-\epsilon_i.$
-
-At a specific geographic level (say census tracts) the true data has
-the form of a histogram; a set of boxes each labeled with a geographic
-unit (e.g. census tract one), a race combination (e.g. Black), one sex
-(e.g. Female), and one age (e.g. 46). Although the 2020 census will
-include more variables, the 1940 data run with E2E test code
-included the following: race (6 mutually exclusive categories), ethnicity
-(non-Hispanic and Hispanic), age group (under-18 and 18-and-over),
-and group quarters (2 categories).
-The number in the box, which we call a histogram count, is the number
-of people in the geographic unit with the features of the label
-(e.g. the number of 18-and-over non-Hispanic White women in
-enumeration district 107). Step one adds geometrically distributed
-random noise to numbers in each box according to the privacy budget at
-the level $\epsilon_i$. This noisy data is unsatisfactory because the
-noisy counts (i) are sometimes negative, (ii) do not satisfy the
-invariants or inequalities, and (iii) are inconsistent with the synthetic data
-produced at the coarser level (e.g. the sum of the noisy counts in all
-the boxes corresponding to a census tract within Cook county may not
-equal the number of people in Cook County reported in the synthetic
-data produced in the previous level.) Step two solves an
-optimization problem which adjusts the counts in boxes so that they
-are non-negative integers, satisfy the invariants and inequalities, are consistent with the
-synthetic data produced at the coarser level, and are as close as
-possible to the noisy counts.
+_TopDown algorithm._ At a high level, the census approach to this
+challenge repeats two steps for multiple levels of a geographic
+hierarchy (from the top down, hence their name "TopDown"). The first
+step (Noisy Histogram) adds noise from a carefully chosen distribution
+to the data counts.  This produces a set of noisy counts. The noisy
+counts might have negative counts or violate invariants or other
+inequalities or be inconsistent with the counts one level up in the
+geographic hierarchy.  The second step (Optimize) adjusts histogram to
+be close as possible to the noisy counts, subject to the constraints
+that all counts be non-negative and consistent with the higher levels
+of the hierarchy, and satisfy the invariants and inequalities.  These
+two steps are performed for each geographic level, from the coarsest
+to the finest.  Each level is assigned a privacy budget $\epsilon_i$
+(which governs how much noise to add in the Noisy Histogram step), and
+the entire algorithm achieves $\epsilon$-DP for $\epsilon=\sum_{i=1}^6
+\epsilon_i$.  The 2020 US Census data will have six geographic levels,
+nested hierarchically: national, state, county, census tracts, block
+groups, and blocks; but in the 1940 E2E test, only national, state,
+county, and district levels were included.
 
 ### Step One: Noisy Histogram
 
 In the E2E algorithm applied to the 1940s microdata, TopDown added random
 noise in a flexible way that allowed the user to choose what
 statistics are the most important to keep accurate. The noise was
-added to the histogram counts for the level and also to a preselected
+added to the detailed histogram counts for the level and also to a preselected
 set of aggregate statistics.
 Aggregate statistics are sets of histogram count sums specified by
-some characteristics. For example, the ``ethnicity-age" aggregate
+some characteristics. For example, the "ethnicity-age" aggregate
 statistic contains set of four counts: people of Hispanic ethnicity under age 18, of Hispanic ethnicity age 18 and over,
 of non-Hispanic ethnicity under age 18, and of non-Hispanic ethnicity age 18 and over. Census Bureau researchers have discussed plans to
 include each value that will appear in a tabular summary in the set of
@@ -180,13 +149,13 @@ add. A further parameterization of the epsilon budget determined how the
 noise was allocated between the histogram counts and each type of
 aggregate statistic. We write $\epsilon_i = h + s_1 + s_2 + \ldots +
 s_k$, where $\epsilon_i$ was the budget for the geographic level, $h$
-was the budget for the histogram counts, and $s_1, \dots s_k$ were the
+was the budget for the detailed queries, and $s_1, \dots s_k$ were the
 budgets for each of the $k$ types of aggregate statistics. Then noise
-was added independently to each histogram count and aggregate statistic
+was added independently to each count
 according to the follow distribution:
 
 
-$$\text{noisy histogram count} = \text{true histogram count} + G(h/2)
+$$\text{noisy detailed histogram count} = \text{true detailed histogram count} + G(h/2)
 $$
 $$\text{noisy aggregate stat $j$} = \text{ true aggregate stat $j$} + G(s_j/2)
 $$
@@ -223,31 +192,23 @@ Mechanism [@chen2015differentially], which may reduce the variance of the noise.
 In this step, the synthetic data is created from the noisy data by
 optimizing a quadratic objective subject to a system of linear
 equations and inequalities. The algorithm creates a variable for each
-histogram count and each aggregate statistic. It adds equations and inequalities
-to encode the requirements that (i) each count and
-aggregate statistic is non-negative, (ii) the invariants and inequalities are
-satisfied, (iii) the aggregate statistics are the sum of the
-corresponding histogram counts, and (iv) the statistics are consistent
-with the higher level synthetic data counts (i.e. the total number of people aged 18 and over
-summed across the counties in a state is equal to the number of people aged 18 and over in
-that state as reported by synthetic data set constructed in the
+detailed histogram count and each aggregate statistic. It adds
+equations and inequalities to encode the requirements that (i) each
+count and aggregate statistic is non-negative, (ii) the invariants and
+inequalities are satisfied, (iii) the aggregate statistics are the sum
+of the corresponding detailed histogram counts, and (iv) the
+statistics are consistent with the higher level synthetic data counts
+(i.e. the total number of people aged 18 and over summed across the
+counties in a state is equal to the number of people aged 18 and over
+in that state as reported by synthetic data set constructed in the
 previous phase). The optimization step finds a solution that satisfies
 these equations and has the property that the value of each variable
-is as close as possible to the corresponding noisy histogram count or
-noisy aggregate statistic. This is done in a way that favors closeness
-for the noisy values constructed by adding noise from a lower variance
-geometric distribution.
-
-The solution to this optimization is not necessarily integral, however,
-and TopDown uses a second optimization step to round
-fractional counts to integers. In this optimization, the linear
-equations and inequalities all correspond to those in the previous
-optimization, and the objective function is changed to minimize $(1 -
-2(x_i - \lfloor x_i \rfloor)) z_i$, where each $x_i$ corresponds to a
-(potentially non-integer) detailed query count given in the synthetic
-data and $z_i$ is required to take an integer value of 0 or 1, where $z_i
-= 0$ implies $x_i$ should be rounded down and $z_i = 1$ implies that
-$x_i$ should be rounded up.
+is as close as possible to the corresponding noisy detailed histogram
+count or noisy aggregate statistic. This is done in a way that favors
+closeness for the noisy values constructed by adding noise from a
+lower variance geometric distribution. The solution to this
+optimization is not necessarily integral, however, and TopDown uses a
+second optimization step to round fractional counts to integers.
 
 TopDown options still to be selected
 ------------------------------------
@@ -267,8 +228,9 @@ and privacy. We list them here, and state how they were set in the
 3. What DP Queries to include. In the test, two DP Queries were
    included: (i) counts stratified by age-group/race/ethnicity (in
    other words, aggregating over "group quarters" type); and (ii) the
-   group-quarters counts, which tally the number of people free-living and
-   number in institutional and non-institutional facilities.
+   group-quarters counts, which tally the number of people free-living
+   as well as in five types of institutional and non-institutional
+   facilities.
 
 4. At each level, how to split level-budget between detailed queries
    and DP queries. The test run used 10% for detailed queries, 22.5%
@@ -314,14 +276,14 @@ Our Evaluation Approach
 3. We searched for bias in the residuals from (1), with our hypothesis
    that the DP counts are positively biased for areas with low
    diversity. For each geographic area, we constructed a "homogeneity
-   index" by counting the cells of the detailed query histogram that
+   index" by counting the cells of the detailed histogram that
    contained a true count of zero, and we examined the bias (mean
    residual) of the corresponding counts from TopDown stratified by
    homogeneity index.
 
 We also compared the median absolute error and empirical privacy loss
 of TopDown to a simpler, but not-differentially-private approach to
-protecting privacy, simple random sampling without replacement for a
+protecting privacy, Simple Random Sampling (i.e. sampling without replacement) for a
 range of sized samples.  To do this, we generated samples without
 replacement of the 1940 Census Data for a range of sizes, and applied
 the same calculations from (1) and (2) to this alternatively perturbed
@@ -411,7 +373,11 @@ $0.1$.
 Comparison with Error and Privacy of Simple Random Sampling
 -----------------------------------------------------------
 
-We found that the MAE and EPL of Simple Random Sampling varied with larger sample size in a manner analogous to the total privacy budget in TopDown, for $\epsilon \geq 1$.  For a 5% sample of the 1940 Census data, we found 
+We found that the MAE and EPL of Simple Random Sampling (i.e. sampling
+uniformly, without replacement) varied with larger sample size in a
+manner analogous to the total privacy budget in TopDown, for $\epsilon
+\geq 1$.
+For a 5% sample of the 1940 Census data, we found 
 median absolute error in TC of 74 at the enumeration district level,
  388 at the county level, and
 3883 at the state level;
@@ -503,8 +469,7 @@ and 6.0 people for $\epsilon = 4.0$.
  (difference between the count estimated by TopDown and the true
  count).  This plot shows the association for enumeration districts,
  and a similar relationship holds at the county level.  As $\epsilon$
- increases, the scale of the bias decreases; this plot shows $\epsilon
- = 1.0$.
+ increases, the scale of the bias decreases.
 
 
 
@@ -516,19 +481,9 @@ For $\epsilon \geq 1.0$, TopDown introduced near minimal noise and
 attained empirical privacy loss almost 10 times less than $\epsilon$,
 but created a quantifiable amount of bias.  The bias increased the
 reported counts in homogeneous districts while decreasing the counts
-in racially and ethnically mixed districts; since the errors are
-similar in *absolute* scale, cities of sufficient size will likely not
-notice who they have lost, but rural districts likely *will* notice or
-at least benefit from the population count (and appropriations) that
-they have gained.  The TopDown algorithm will likely drive some
-redistribution of resources from diverse urban communities to
-segregated rural communities.
-
-The small communities that are likely to have upward bias in their
-TopDown counts will be the ones small enough to benefit from the
-quality Assurance processes that have been implemented in past
-censuses, such as the Count Question Resolution program, and the
-results in this paper can help anticipate and plan for this process.
+in racially and ethnically mixed districts.  The TopDown algorithm may
+therefore drive some redistribution of resources from diverse urban
+communities to segregated rural communities.
 
 Accurate counts in small communities are important for emergency
 preparedness and other routine planning tasks performed by state and
@@ -538,51 +493,66 @@ system.
 
 This work has not investigated more detailed research uses of
 decennial census data in social research tasks, such as segregation
-research, and how this may be affected by TopDown.  On the other hand,
-human subject research requires informed consent (Belmont Principles);
-de-identified data is not HSR, but if it is re-identifiable, it should
-not be considered de-identified, should it?
+research, and how this may be affected by TopDown.
 
 Another important use of decennial census data is in constructing
 control populations and survey weights for survey sampling of the US
-population for health, political, and public opinion polling.  This
-work provides some evidence on how TopDown may affect this work, but
-further work is warranted.
+population for health, political, and public opinion polling.  Our
+work provides some evidence on how TopDown may affect this
+application, but further work is warranted.
 
 This work still fits into the beginning of a discussion on how to best
 balance privacy and accuracy in decennial census data collection, and
 there is a need for continued discussion.  This need must be balanced
 against a risky sort of observer bias---attitude surveys have found
 that calling attention to the privacy and confidentiality of census
-responses, even if done in a positive manner, reduce willingness to
-answer census questions.[ref]
+responses, even if done in a positive manner, reduces the willingness
+of respondants to answer census questions.[ref]
 
 Limitations
 -----------
 
 There are many differences between the 1940 census data and the 2020
-data to be collected next year. Number of geographic levels, number of
-strata to be included in detailed queries.
+data to be collected next year. In addition to the US population being
+three times larger now, the analysis will have six geographic levels
+instead of four, ten times more race groups and ove r 60 times more
+age groups. We expect that this will yield detailed queries with
+typical exact count sizes even smaller than the stratified counts for
+enumeration districts we have examined here.  We suspect that impact
+of this will likely be to slightly decrease accuracy and increase
+privacy loss, but the accuracy of our hypothesis remains to be seen.
 
-Additional changes are being planned, HDMM instead of geometric
-mechanism, for example.
+In addition to the changes in the data, additional changes are planned
+for TopDown, such as a switch from independent geometric noise to the
+High Dimensional Matrix Mechanism. We expect this to increase the
+accuracy a small amount without changing the empirical privacy loss.
 
-Our approach to quantifying error focused on the median absolute
-error, and there are important tails to this distribution as well.
-
-Our empirical privacy loss is not comprehensive, and there is the
-possibility that some other perturbation or some other test statistic
-would reveal a larger privacy loss than we have found with our
-approach.  Our approach also assumes that the residuals for different
-locations is generalizable to the residuals from the same location
-when run with different data.  Although these are certainly different,
-it is likely that the difference is sufficiently small as to not
-affect our estimates substantially.
+In this work, we have focused on the median of the absolute error, but
+the spread of this distribution is important as well, and in future
+work, researchers may wish to investigate the tails of this
+distribution. We have also focused on the empirical privacy loss for
+specific queries at specific geographic aggregations, and our
+exploration was not comprehensive. Therefore, it is possible that some
+other test statistic would demonstrate a larger empirical privacy loss
+than we have found with our approach. Our approach also assumes that
+the residuals for different locations is generalizable to the
+residuals from the same location when run with different
+data. Although these are certainly different, we suspect that the
+difference is sufficiently small as to not affect our estimates
+substantially.
 
 Conclusion
 ==========
 
-DP in census, what will it be?  Opportunity to have something that balances privacy and accuracy, but this opportunity is not without risks.
+The TopDown algorithm will provide a provably $\epsilon$-DP disclosure
+avoidance system for the 2020 US Census, and it provides affordances
+to balances privacy and accuracy.  This is an opportunity, but it is
+not without risks. Taking advantage of the opportunity and mitigating
+the risks will require that we understand what the approach is doing,
+and we hope that this analysis of the 2018 E2E test can help build
+such understanding.
+
+
 
 
 

@@ -1,3 +1,9 @@
+Differential privacy in the 2020 US census, what will it do? Quantifying the accuracy/privacy tradeoff
+======================================================================================================
+
+Samantha Petti and Abraham D. Flaxman, 2019-08-22
+
+
 Acronyms
 ========
 
@@ -29,7 +35,7 @@ The confidentiality of information in the decennial census is also
 constitutionally mandated, and the 2020 US Census will use a novel
 approach to "disclosure avoidance" to protect respondents' data.[@abowd2018disclosure] This
 approach builds on Differential Privacy, a mathematical
-definition of privacy and privacy loss that has been developed over
+definition of privacy that has been developed over
 the last decade and a half in the theoretical computer science and
 cryptography communities.[@dwork2014algorithmic] Although the new approach allows a more
 precise accounting of the noise introduced by the process, it also

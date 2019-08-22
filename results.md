@@ -81,7 +81,11 @@ $0.1$.
 Comparison with Error and Privacy of Simple Random Sampling
 -----------------------------------------------------------
 
-We found that the MAE and EPL of Simple Random Sampling varied with larger sample size in a manner analogous to the total privacy budget in TopDown, for $\epsilon \geq 1$.  For a 5% sample of the 1940 Census data, we found 
+We found that the MAE and EPL of Simple Random Sampling (i.e. sampling
+uniformly, without replacement) varied with larger sample size in a
+manner analogous to the total privacy budget in TopDown, for $\epsilon
+\geq 1$.
+For a 5% sample of the 1940 Census data, we found 
 median absolute error in TC of {tc_enum_dist_5pct_mae} at the enumeration district level,
  {tc_county_5pct_mae} at the county level, and
 {tc_state_5pct_mae} at the state level;
@@ -173,8 +177,7 @@ and {tc_county_4_0_22_bias} people for $\epsilon = 4.0$.
  (difference between the count estimated by TopDown and the true
  count).  This plot shows the association for enumeration districts,
  and a similar relationship holds at the county level.  As $\epsilon$
- increases, the scale of the bias decreases; this plot shows $\epsilon
- = 1.0$.
+ increases, the scale of the bias decreases.
 
 
 
