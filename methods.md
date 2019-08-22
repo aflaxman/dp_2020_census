@@ -22,8 +22,7 @@ $$
 
 Differential privacy is a characteristic of an algorithm; it is not a
 specific algorithm. Algorithms often achieve
-differential privacy by adding random noise to the exact, but non-DP
-output.[@dwork2014algorithmic]
+differential privacy by adding random noise.[@dwork2014algorithmic]
 
 The new disclosure avoidance system for the 2020 US Census is designed
 to be DP and to maintain the accuracy of census
@@ -45,9 +44,9 @@ step (Noisy Histogram) adds noise from a carefully chosen distribution
 to the data counts.  This produces a set of noisy counts. The noisy
 counts might have negative counts or violate invariants or other
 inequalities or be inconsistent with the counts one level up in the
-geographic hierarchy.  The second step (Optimize) adjusts histogram to
+geographic hierarchy.  The second step (Optimize) adjusts the histogram to
 be close as possible to the noisy counts, subject to the constraints
-that all counts be non-negative and consistent with the higher levels
+that all counts be non-negative and consistent with each other and the higher levels
 of the hierarchy, and satisfy the invariants and inequalities.  These
 two steps are performed for each geographic level, from the coarsest
 to the finest.  Each level is assigned a privacy budget $\epsilon_i$
@@ -60,25 +59,26 @@ county, and district levels were included.
 
 ### Step One: Noisy Histogram
 
-In the E2E algorithm applied to the 1940s microdata, TopDown added random
-noise in a flexible way that allowed the user to choose what
+In the E2E algorithm applied to the 1940s microdata, TopDown added
+random noise in a flexible way that allowed the user to choose what
 statistics are the most important to keep accurate. The noise was
-added to the detailed histogram counts for the level and also to a preselected
-set of aggregate statistics.
-Aggregate statistics are sets of histogram count sums specified by
-some characteristics. For example, the "ethnicity-age" aggregate
-statistic contains set of four counts: people of Hispanic ethnicity under age 18, of Hispanic ethnicity age 18 and over,
-of non-Hispanic ethnicity under age 18, and of non-Hispanic ethnicity age 18 and over. Census Bureau researchers have discussed plans to
-include each value that will appear in a tabular summary in the set of
-aggregate statistics.  The E2E test included two such aggregate statistics (internally called "DP queries"): a group-quarters query, 
-which increases the accuracy of the count of each household type at
-each level of the hierarchy, and a race/ethnicity/age query, which
-increases the accuracy of the stratified counts of people by race,
-ethnicity, and voting age across all household/group quarters types (again
-for each level of the spatial hierarchy). It also included "detailed queries" corresponding to boxes in the histogram.
-The detailed queries were
-afforded 10% of the privacy budget at each level, while the DP queries
-split the remaining 90% of the privacy budget, with 22.5% spent on the
+added to the detailed histogram counts for the level and also to a
+preselected set of aggregate statistics.  Aggregate statistics are
+sets of histogram count sums specified by some characteristics. For
+example, the "ethnicity-age" aggregate statistic contains set of four
+counts: people of Hispanic ethnicity under age 18, of Hispanic
+ethnicity age 18 and over, of non-Hispanic ethnicity under age 18, and
+of non-Hispanic ethnicity age 18 and over.  The E2E test included two
+such aggregate statistics (internally called "DP queries"): a
+group-quarters query, which increases the accuracy of the count of
+each household type at each level of the hierarchy, and a
+race/ethnicity/age query, which increases the accuracy of the
+stratified counts of people by race, ethnicity, and voting age across
+all household/group quarters types (again for each level of the
+spatial hierarchy). It also included "detailed queries" corresponding
+to boxes in the histogram.  The detailed queries were afforded 10% of
+the privacy budget at each level, while the DP queries split the
+remaining 90% of the privacy budget, with 22.5% spent on the
 group-quarters queries and 67.5% spend on the race/ethnicity/age
 queries.
 
@@ -123,7 +123,8 @@ population of the latter is smaller.
 Although the E2E test used independent geometric noise for each
 detailed query and DP query at each level, the version of TopDown for
 the 2020 Census DAS will likely use the High Dimensional Matrix
-Mechanism [@chen2015differentially], which may reduce the variance of the noise.
+Mechanism [@chen2015differentially], which may reduce the variance of
+the noise.[TODO: confirm or remove this]
 
 ### Step Two: Optimize
 

@@ -42,7 +42,7 @@ precise accounting of the noise introduced by the process, it also
 risks reducing the utility of census data---it may produce counts that
 are substantially noisier than the previous disclosure avoidance
 system, which was based on a technique called swapping, and relied on
-the detailed of the swapping procedure being secret.[@mckenna2018disclosure]
+the details of the swapping procedure being secret.[@mckenna2018disclosure]
 
 To date, there is a lack of empirical examination of the new disclosure avoidance system
 but the approach was applied to the 2018 end-to-end (E2E) test of the

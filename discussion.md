@@ -31,7 +31,7 @@ there is a need for continued discussion.  This need must be balanced
 against a risky sort of observer bias---attitude surveys have found
 that calling attention to the privacy and confidentiality of census
 responses, even if done in a positive manner, reduces the willingness
-of respondants to answer census questions.[ref]
+of respondents to answer census questions.[ref]
 
 Limitations
 -----------

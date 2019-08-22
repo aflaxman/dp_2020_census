@@ -96,7 +96,7 @@ median absolute error in TC of {tc_enum_dist_50pct_mae} at the enumeration distr
 and a 95% sample produced
 median absolute error in TC of {tc_enum_dist_95pct_mae} at the enumeration district level,
  {tc_county_95pct_mae} at the county level, and
-{tc_state_95pct_mae} at the state level;
+{tc_state_95pct_mae} at the state level.
 
 Error in stratified county varied similarly; for a 5% sample, we found
 median absolute error in SC of {sc_enum_dist_5pct_mae} at the enumeration district level,
