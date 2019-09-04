@@ -98,7 +98,7 @@ $$
 $$\text{noisy aggregate stat $j$} = \text{ true aggregate stat $j$} + G(s_j/2)
 $$
 
-where $G(z)$ denotes the geometric distribution,
+where $G(z)$ denotes the two-tailed geometric distribution,
 
 $$\Pr[G(z)=k] = \frac{(1 - \exp(-z))\exp(-z|k|)}{1 + \exp(-z)}.$$
 
@@ -207,18 +207,22 @@ Our Evaluation Approach
 
    $$\text{EPL}(x) = \log\left(\hat{p}(x) / \hat{p}(x+1)\right).$$
 
-   We hypothesized that the EPL of TopDown will be substantially smaller
-   than the theoretical guarantee of $\epsilon$.  However, it is possible
-   that it will be _much larger_ than $\epsilon$, due to the
-   difficult-to-predict impact of including certain invariants.
+   [Some words about why this is different that the worst-case
+   guarantee from epsilon-DP, perhaps based on email exchange with
+   Philip Leclerc.]  We hypothesized that the EPL of TopDown will be
+   substantially smaller than the theoretical guarantee of $\epsilon$.
+   However, it is possible that it will be _much larger_ than
+   $\epsilon$, due to the difficult-to-predict impact of including
+   certain invariants.
 
 3. We searched for bias in the residuals from (1), with our hypothesis
    that the DP counts are positively biased for areas with low
-   diversity. For each geographic area, we constructed a "homogeneity
-   index" by counting the cells of the detailed histogram that
-   contained a true count of zero, and we examined the bias (mean
-   residual) of the corresponding counts from TopDown stratified by
-   homogeneity index.
+   diversity. [More detail about the theory behind this hypothesis,
+   and the competing theory that it is about geographic unit size.]
+   For each geographic area, we constructed a "homogeneity index" by
+   counting the cells of the detailed histogram that contained a true
+   count of zero, and we examined the bias (mean residual) of the
+   corresponding counts from TopDown stratified by homogeneity index.
 
 We also compared the median absolute error and empirical privacy loss
 of TopDown to a simpler, but not-differentially-private approach to

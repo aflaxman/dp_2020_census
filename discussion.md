@@ -1,13 +1,17 @@
 Discussion
 ==========
 
+[Comparison of TopDown to SRS, perhaps adapted from my email to danah boyd.]
+
 For $\epsilon \geq 1.0$, TopDown introduced near minimal noise and
 attained empirical privacy loss almost 10 times less than $\epsilon$,
 but created a quantifiable amount of bias.  The bias increased the
 reported counts in homogeneous districts while decreasing the counts
 in racially and ethnically mixed districts.  The TopDown algorithm may
 therefore drive some redistribution of resources from diverse urban
-communities to segregated rural communities.
+communities to segregated rural communities.  [More about the
+hypothesis that bias is due to homogeneity, vs the theory that bias is
+due to unit size.]
 
 Accurate counts in small communities are important for emergency
 preparedness and other routine planning tasks performed by state and
