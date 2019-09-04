@@ -43,13 +43,15 @@ def perturbation_error(df_orig, df_new, stratification_cols=['state', 'county'])
     return error
 
     
-def empirical_privacy_loss(error):
+def empirical_privacy_loss(error, bandwidth=0.1):
     """Calculate the empirical privacy loss based on observed measurement errors
 
     Parameters
     ----------
 
     error : pd.Series of measurement errors
+    bandwidth : float, optional, passed as bw_method parameter in
+                scipy.stats.gaussian_kde
     
     Results
     -------
@@ -78,7 +80,7 @@ def empirical_privacy_loss(error):
         df['smooth_hist'] = np.nan * np.ones_like(bin_edges[:-1])
         df['smooth_epl'] = np.inf * np.ones_like(bin_edges[:-1])
     else:
-        kernel = scipy.stats.gaussian_kde(all_errors, bw_method=.1)
+        kernel = scipy.stats.gaussian_kde(all_errors, bw_method=bandwidth)
         f_smoothed = N*kernel(.5 * (bin_edges[:-1] + bin_edges[1:]))
         ratio = f_smoothed[:-1] / f_smoothed[1:]
         df['smooth_hist'] = f_smoothed[:-1]
