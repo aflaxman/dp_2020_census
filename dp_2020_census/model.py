@@ -43,7 +43,7 @@ def perturbation_error(df_orig, df_new, stratification_cols=['state', 'county'])
     return error
 
     
-def empirical_privacy_loss(error, bandwidth=0.1):
+def empirical_privacy_loss(error, bandwidth=0.1, est_range_percentile=99, est_range_multiplier=1.5):
     """Calculate the empirical privacy loss based on observed measurement errors
 
     Parameters
@@ -52,6 +52,10 @@ def empirical_privacy_loss(error, bandwidth=0.1):
     error : pd.Series of measurement errors
     bandwidth : float, optional, passed as bw_method parameter in
                 scipy.stats.gaussian_kde
+    est_range_percentile : float, optional, used as upperbound and 
+                           100-lowerbound percentile for estimation range
+    est_range_multiplier : float, optional, used to scale percentile 
+                           bound for estimation range
     
     Results
     -------
@@ -60,9 +64,9 @@ def empirical_privacy_loss(error, bandwidth=0.1):
 
     """
 
-    lb = np.percentile(error, 1)
-    ub = np.percentile(error, 99)
-    bnd = 1.5*max(abs(lb), abs(ub))
+    lb = np.percentile(error, 100-est_range_percentile)
+    ub = np.percentile(error, est_range_percentile)
+    bnd = est_range_multiplier*max(abs(lb), abs(ub))
 
     est_range = [-bnd, bnd]
     all_errors = error.values
@@ -73,7 +77,10 @@ def empirical_privacy_loss(error, bandwidth=0.1):
 
     df = pd.DataFrame(index=.5*(bin_edges[:-2] + bin_edges[1:-1]))
     df['hist'] = f_empirical[:-1]
-    df['epl'] = np.log(ratio)
+    df['epl_hist'] = np.log(ratio)
+
+    ccusum = f_empirical.sum() - np.cumsum(f_empirical)
+    df['epl_cusum'] = np.log(ccusum[1:] / ccusum[:-1])
 
     if np.allclose(all_errors, 0):
         # can't do kde of all zeros
