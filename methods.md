@@ -149,6 +149,12 @@ lower variance geometric distribution. The solution to this
 optimization is not necessarily integral, however, and TopDown uses a
 second optimization step to round fractional counts to integers.
 
+Empirical Privacy Loss for quantifying impact of optimize steps
+---------------------------------------------------------------
+
+[to come an introduction and justification for the EPL approach---why is EPL expected to be related to epsilon?]
+
+
 TopDown options still to be selected
 ------------------------------------
 

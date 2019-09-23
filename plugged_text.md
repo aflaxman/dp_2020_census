@@ -32,7 +32,7 @@ facilitate the accurate weighting of subsequent population surveys for
 the next decade.[@ruggles2019differential]
 
 The confidentiality of information in the decennial census is also
-constitutionally mandated, and the 2020 US Census will use a novel
+required by law, and the 2020 US Census will use a novel
 approach to "disclosure avoidance" to protect respondents' data.[@abowd2018disclosure] This
 approach builds on Differential Privacy, a mathematical
 definition of privacy that has been developed over
@@ -53,7 +53,7 @@ Census Bureau.[@abowd2018disclosure][@boyd2019differential]
 We used the recently released code, preprints, and data files to understand and
 quantify the error introduced by the E2E disclosure avoidance system
 when Census Bureau applied it to 1940 census data
-(for which the full data has previously been released)
+(for which the individual-level data has previously been released [@ruggles2018ipums])
 for a range of privacy loss budgets.  We also developed an empirical
 measure of privacy loss and used it to compare the error and privacy
 of the new approach to that of a simple-random-sampling approach to
@@ -160,7 +160,7 @@ $$
 $$\text{noisy aggregate stat $j$} = \text{ true aggregate stat $j$} + G(s_j/2)
 $$
 
-where $G(z)$ denotes the geometric distribution,
+where $G(z)$ denotes the two-tailed geometric distribution,
 
 $$\Pr[G(z)=k] = \frac{(1 - \exp(-z))\exp(-z|k|)}{1 + \exp(-z)}.$$
 
@@ -210,6 +210,12 @@ closeness for the noisy values constructed by adding noise from a
 lower variance geometric distribution. The solution to this
 optimization is not necessarily integral, however, and TopDown uses a
 second optimization step to round fractional counts to integers.
+
+Empirical Privacy Loss for quantifying impact of optimize steps
+---------------------------------------------------------------
+
+[to come an introduction and justification for the EPL approach---why is EPL expected to be related to epsilon?]
+
 
 TopDown options still to be selected
 ------------------------------------
@@ -269,18 +275,22 @@ Our Evaluation Approach
 
    $$\text{EPL}(x) = \log\left(\hat{p}(x) / \hat{p}(x+1)\right).$$
 
-   We hypothesized that the EPL of TopDown will be substantially smaller
-   than the theoretical guarantee of $\epsilon$.  However, it is possible
-   that it will be _much larger_ than $\epsilon$, due to the
-   difficult-to-predict impact of including certain invariants.
+   [Some words about why this is different that the worst-case
+   guarantee from epsilon-DP, perhaps based on email exchange with
+   Philip Leclerc.]  We hypothesized that the EPL of TopDown will be
+   substantially smaller than the theoretical guarantee of $\epsilon$.
+   However, it is possible that it will be _much larger_ than
+   $\epsilon$, due to the difficult-to-predict impact of including
+   certain invariants.
 
 3. We searched for bias in the residuals from (1), with our hypothesis
    that the DP counts are positively biased for areas with low
-   diversity. For each geographic area, we constructed a "homogeneity
-   index" by counting the cells of the detailed histogram that
-   contained a true count of zero, and we examined the bias (mean
-   residual) of the corresponding counts from TopDown stratified by
-   homogeneity index.
+   diversity. [More detail about the theory behind this hypothesis,
+   and the competing theory that it is about geographic unit size.]
+   For each geographic area, we constructed a "homogeneity index" by
+   counting the cells of the detailed histogram that contained a true
+   count of zero, and we examined the bias (mean residual) of the
+   corresponding counts from TopDown stratified by homogeneity index.
 
 We also compared the median absolute error and empirical privacy loss
 of TopDown to a simpler, but not-differentially-private approach to
@@ -478,13 +488,39 @@ and 6.0 people for $\epsilon = 4.0$.
 Discussion
 ==========
 
-For $\epsilon \geq 1.0$, TopDown introduced near minimal noise and
-attained empirical privacy loss almost 10 times less than $\epsilon$,
-but created a quantifiable amount of bias.  The bias increased the
+We anticipate some readers of this will be social researchers who rely
+on Census Bureau data for quantitative work, and who have concerns that
+the Census Bureau is going to add noise to this data.  Such a reader may be open
+to the possibility that privacy is a valid reason for adding this
+noise, yet still be concerned about how this noise will affect their
+next decade of research. Our results visually summarized in Figure 2
+can help to understand what this noise will mean: if $\epsilon=1.0$, for
+county-level stratified counts, TopDown will be like the noise
+introduced by working with a 50% sample of the full dataset; if
+$\epsilon=2.0$, it will like working with a 75% sample; and if $\epsilon=6.0$,
+it will have accuracy matching a 95% sample, which is pretty close
+to having the full data without noise.  Such a reader may still want
+to see an analysis like this run on the 2010 decennial census data, but we hope
+this will help them rest a little easier about the quality of the data
+they are relying on for their work.
+
+We also expect that some readers will be more drawn to the lower end
+of the epsilon curve.  Just how private is TopDown with $\epsilon=0.25$, especially
+when total count at the state-level is invariant? Our results show
+that all $\epsilon$ less than 1.0 have empirical privacy loss around
+0.15, independent of $\epsilon$.  You can add more and more noise, but,
+perhaps due to the invariants, that noise is not translating into more
+and more privacy.
+
+For $\epsilon \geq 1.0$, we found that TopDown introduced near minimal noise and
+attained empirical privacy loss almost 10 times less than $\epsilon$.  
+We also found that this created a quantifiable amount of bias.  The bias increased the
 reported counts in homogeneous districts while decreasing the counts
 in racially and ethnically mixed districts.  The TopDown algorithm may
 therefore drive some redistribution of resources from diverse urban
-communities to segregated rural communities.
+communities to segregated rural communities.  [More about the
+hypothesis that bias is due to homogeneity, vs the theory that bias is
+due to unit size.]
 
 Accurate counts in small communities are important for emergency
 preparedness and other routine planning tasks performed by state and
@@ -516,7 +552,7 @@ Limitations
 There are many differences between the 1940 census data and the 2020
 data to be collected next year. In addition to the US population being
 three times larger now, the analysis will have six geographic levels
-instead of four, ten times more race groups and ove r 60 times more
+instead of four, ten times more race groups and over 60 times more
 age groups. We expect that this will yield detailed queries with
 typical exact count sizes even smaller than the stratified counts for
 enumeration districts we have examined here.  We suspect that impact

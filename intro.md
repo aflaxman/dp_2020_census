@@ -32,7 +32,7 @@ facilitate the accurate weighting of subsequent population surveys for
 the next decade.[@ruggles2019differential]
 
 The confidentiality of information in the decennial census is also
-constitutionally mandated, and the 2020 US Census will use a novel
+required by law, and the 2020 US Census will use a novel
 approach to "disclosure avoidance" to protect respondents' data.[@abowd2018disclosure] This
 approach builds on Differential Privacy, a mathematical
 definition of privacy that has been developed over
@@ -53,7 +53,7 @@ Census Bureau.[@abowd2018disclosure][@boyd2019differential]
 We used the recently released code, preprints, and data files to understand and
 quantify the error introduced by the E2E disclosure avoidance system
 when Census Bureau applied it to 1940 census data
-(for which the full data has previously been released)
+(for which the individual-level data has previously been released [@ruggles2018ipums])
 for a range of privacy loss budgets.  We also developed an empirical
 measure of privacy loss and used it to compare the error and privacy
 of the new approach to that of a simple-random-sampling approach to
