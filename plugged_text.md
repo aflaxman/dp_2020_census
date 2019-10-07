@@ -212,8 +212,69 @@ second optimization step to round fractional counts to integers.
 Empirical Privacy Loss for quantifying impact of optimize steps
 ---------------------------------------------------------------
 
-[to come an introduction and justification for the EPL approach---why
-is EPL expected to be related to epsilon?]
+DP algorithms like TopDown are engineered to achieve a guaranteed
+maximum level of privacy loss (the $\epsilon$ in $\epsilon$-DP).
+However, the proof that TopDown has privacy loss bounded by $\epsilon$
+might have room for improvement.  It is possible to directly
+investigate privacy loss of any algorithm $\mathcal{A}$ by searching
+for databases $D$ and $D'$ that differ on a single row and an event
+$E$ that can serve as a witness to the gap between $\Pr[\mathcal{A}(D)
+\in E]$ and $\Pr[\mathcal{A}(D') \in E]$.  Estimating the ratio of
+these probabilities is straightforward, but computationally intensive,
+and searching the space of near-databases and events is also difficult
+to do in general.  This approach has been developed in prior work by
+Ding et al (2019).[ding2018detecting]
+
+Because of the special structure of count queries, there is a way to
+avoid re-running algorithm $\mathcal{A}$ repeatedly, which is
+essential for TopDown, since it takes several hours to complete a
+single run of the algorithm.  Assuming that the residual difference of
+the DP count minus the exact count is identically distributed for
+queries across similar areas (such as voting-age population across all
+enumeration districts), then instead of focusing on only the histogram
+counts containing the individual who has changed, we could use the
+residuals for all areal units to estimate the probability of the event
+we are after:
+$$
+\Pr\left[\mathrm{error}_{j_1, j_2, \ldots, j_{J}}^D =k\right]
+ \approx \bigg(\sum_{j_1'=1}^C\sum_{j_2'=1}^C\cdots\sum_{j_J'= 1}^C
+   \mathbf{1}\left[\left\{\mathrm{error}_{j_1', j_2', \ldots, j_{J}'}^D
+ = k\right\}\right]\bigg)\bigg/C^J =: \hat{p}_k,
+$$
+and
+$$
+\mathrm{error}_{j_1, j_2, \ldots, j_{J}}^D
+$$
+is the residual difference of DP counts returned by TopDown minus the
+exact count for that same quantity in the 1940 census.
+
+We can make this estimate with more precision than the direct
+estimate, using substantially less computation.
+
+It is also possible to make an estimate of the probability $D'$ yields
+error of $k$ without repeatedly running the DP algorithm.  This relies
+on the observation that, for count queries, a change to a single row
+of data can change the exact count by at most one for any areal unit.
+Therefore
+$$
+\Pr\left[\mathrm{error}_{j_1, j_2, \ldots, j_{J}}^{D'}
+= k\right]
+\gtrapprox
+\begin{cases}
+\Pr\left[\mathrm{error}_{j_1, j_2, \ldots, j_{J}}^{D}
+= k+1\right], \qquad \text{ if } k \geq 0;\\[.1in]
+\Pr\left[\mathrm{error}_{j_1, j_2, \ldots, j_{J}}^{D}
+= k-1\right], \qquad \text{ if } k \leq 0;
+\end{cases}
+$$
+which we can also approximate by examining the residuals for all areal units:
+$$
+\Pr\left[\mathrm{error}_{j_1, j_2, \ldots, j_{J}}^{D'}
+= k\right]
+\gtrapprox
+\bigg(\sum_{j_1'=1}^C\sum_{j_2'=1}^C\cdots\sum_{j_J' = 1}^C \mathbf{1}\left[\left\{\mathrm{error}_{j_1', j_2', \ldots, j_{J}'}^D
+= k\pm 1\right\}\right]\bigg)\bigg/C^J.
+$$
 
 
 TopDown options still to be selected
@@ -265,31 +326,36 @@ Our Evaluation Approach
    the size of these counts to understand relative error as well as
    the absolute error introduced by TopDown.
 
-2. We calculated a measure of "empirical privacy loss", inspired by
-   the definition of differential privacy.  To measure empirical
-   privacy loss, we approximate the probability distribution of the
-   residuals $\hat{p}(x)$ using Gaussian kernel density estimation
-   with a bandwidth of 0.1, and compare the log-ratio inspired by the
+2. We calculated a measure of empirical privacy loss (EPL), inspired
+   by the definition of differential privacy.  To measure EPL, we
+   approximated the probability distribution of the residuals
+   $\hat{p}(x)$ using Gaussian kernel density estimation with a
+   bandwidth of 0.1, and compare the log-ratio inspired by the
    definition of $\epsilon$-DP algorithms:
 
    $$\text{EPL}(x) = \log\left(\hat{p}(x) / \hat{p}(x+1)\right).$$
 
-   [Some words about why this is different that the worst-case
-   guarantee from epsilon-DP, perhaps based on email exchange with
-   Philip Leclerc.]  We hypothesized that the EPL of TopDown will be
-   substantially smaller than the theoretical guarantee of $\epsilon$.
-   However, it is possible that it will be _much larger_ than
-   $\epsilon$, due to the difficult-to-predict impact of including
-   certain invariants.
+   We hypothesized that the EPL of TopDown will be substantially
+   smaller than the theoretical guarantee of $\epsilon$, which was
+   proven using the Sequential Composition Theorem, which provides an
+   inequality that is usually _not_ a tight
+   bound.[@flaxman2019empirical] However, it is possible that it will
+   be _much larger_ than $\epsilon$, due to the difficult-to-predict
+   impact of including certain invariants.
 
 3. We searched for bias in the residuals from (1), with our hypothesis
    that the DP counts are positively biased for areas with low
-   diversity. [More detail about the theory behind this hypothesis,
-   and the competing theory that it is about geographic unit size.]
-   For each geographic area, we constructed a "homogeneity index" by
-   counting the cells of the detailed histogram that contained a true
-   count of zero, and we examined the bias (mean residual) of the
-   corresponding counts from TopDown stratified by homogeneity index.
+   diversity. We based this hypothesis on the expected impact of the
+   non-negativity constraints included in the optimization steps of
+   the TopDown algorithm.  For each detailed query with a negative
+   value for its noisy count, the optimization step will increase the
+   value to make the results logical, and this reduction in variance
+   must tradeoff some increase in bias. To quantify the scale of the
+   bias introduced by optimization, for each geographic area, we
+   constructed a "homogeneity index" by counting the cells of the
+   detailed histogram that contained a true count of zero, and we
+   examined the bias (mean residual) of the corresponding counts from
+   TopDown stratified by homogeneity index.
 
 We also compared the median absolute error and empirical privacy loss
 of TopDown to a simpler, but not-differentially-private approach to
