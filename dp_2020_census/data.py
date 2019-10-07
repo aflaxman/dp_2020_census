@@ -93,7 +93,7 @@ def load_transform_orig():
 
     return counts
 
-def load_transform_dp(epsilon, replicate):
+def load_transform_dp(epsilon='', replicate=1, fname=''):
     """Tally counts from 1940s run through TopDown, stratified by
     state, county, enumeration district, group quarters type, voting age status, race, and ethnicity
 
@@ -101,6 +101,7 @@ def load_transform_dp(epsilon, replicate):
     ----------
     epsilon : str, privacy budget
     replicate : int, replicate 1, 2, 3, or 4
+    fname : str, optional
 
     Results
     -------
@@ -113,10 +114,12 @@ def load_transform_dp(epsilon, replicate):
     43s for 20_000_000 rows
     predict 5m for full file (132_404_779 rows)
     """
+    if fname == '':
+        fname = f'/snfs1/Project/Models/us_census/{epsilon}-RUN{replicate}/MDF_PER.txt'
+    print(fname)
+
     counts = collections.Counter()
 
-    fname = f'/snfs1/Project/Models/us_census/{epsilon}-RUN{replicate}/MDF_PER.txt'
-    print(fname)
     colnames = topdown_colnames()
 
     chunksize = 2_000_000
