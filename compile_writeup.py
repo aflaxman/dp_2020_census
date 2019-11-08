@@ -1,5 +1,5 @@
 # load all numbers to plug
-import json, glob
+import json, glob, datetime
 
 
 results = {}
@@ -7,6 +7,7 @@ for fname in glob.glob('*.json'):
     addl_results = json.load(open(fname))
     assert set(addl_results.keys()) & set(results.keys()) == set(), 'There should be no duplicate keys'
     results.update(addl_results)
+results['formatted_date'] = datetime.datetime.now().isoformat(timespec='hours')
 
 
 # load the template text

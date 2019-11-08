@@ -1,7 +1,7 @@
 Differential privacy in the 2020 US census, what will it do? Quantifying the accuracy/privacy tradeoff
 ======================================================================================================
 
-Samantha Petti and Abraham D. Flaxman, 2019-10-07
+Samantha Petti and Abraham D. Flaxman, 2019-11-07T16
 
 
 Acronyms
@@ -20,12 +20,12 @@ Introduction
 In the United States, the Decennial Census is an important part of
 democratic governance.  Every ten years, the US Census Bureau is
 constitutionally required to count the "whole number of persons in
-each State", and in 2020 this effort is likely to cost over fifteen
+each State," and in 2020 this effort is likely to cost over fifteen
 billion dollars.[@garfinkel2019understanding][@gao2018census] The
 results will be used for apportioning representation in the US House
 of Representatives, for dividing federal tax dollars between states,
 as well as for a multitude of other governmental activities at the
-national, state, and local level.  Data from the decennial census will
+national, state, and local levels.  Data from the decennial census will
 also be used extensively by sociologists, economists, demographers,
 and other researchers, and it will also inform strategic decisions in
 the private and non-profit sectors, and facilitate the accurate
@@ -39,12 +39,15 @@ data.[@abowd2018disclosure] This approach builds on Differential
 Privacy, a mathematical definition of privacy that has been developed
 over the last decade and a half in the theoretical computer science
 and cryptography communities.[@dwork2014algorithmic] Although the new
-approach allows a more precise accounting of the noise introduced by
-the process, it also risks reducing the utility of census data---it
-may produce counts that are substantially noisier than the previous
-disclosure avoidance system, which was based on a technique called
-swapping, and relied on the details of the swapping procedure being
-secret.[@mckenna2018disclosure]
+approach allows a more precise accounting of the variation introduced
+by the process, it also risks reducing the utility of census data---it
+may produce counts that are substantially less accurate than the
+previous disclosure avoidance system, which was based on redacting the
+values of table cells below a certain size (cell suppression) and a
+technique called swapping, where pairs of households with similar
+structures but different locations had their location information
+exchanged in a way that required that the details of the swapping
+procedure be kept secret.[@mckenna2018disclosure]
 
 To date, there is a lack of empirical examination of the new
 disclosure avoidance system but the approach was applied to the 2018
@@ -76,7 +79,7 @@ with a parameter $\epsilon$, which quantifies how much privacy loss is
 allowed, meaning how much can one person's data to affect the
 analysis.
 
-To be precise, randomized algorithm $\mathcal{A}$ is $\epsilon$-DP if,
+To be precise, a randomized algorithm $\mathcal{A}$ is $\epsilon$-DP if,
 for each possible output $\mathcal{P}$, for any pair of datasets $D$
 and $D'$ that are the same everywhere except for on one person's data,
 $$
@@ -87,56 +90,64 @@ $$
 
 Differential privacy is a characteristic of an algorithm; it is not a
 specific algorithm. Algorithms often achieve differential privacy by
-adding random noise.[@dwork2014algorithmic]
+adding random variation.[@dwork2014algorithmic]
 
 The new disclosure avoidance system for the 2020 US Census is designed
 to be DP and to maintain the accuracy of census counts. To complicate
 things beyond the typical challenge faced in DP algorithm design,
-there are certain counts in the census that will be published exactly
-as enumerated, without any variation caused by adding noise.  These
+there are certain counts in the census that will be published precisely
+as enumerated, without any variation added.  These
 _invariants_ have not been selected for the 2020 decennial census yet,
 but in the 2018 end-to-end (E2E) test, the total count for each state
 and the number of households in each enumeration district were
-invariants.  There are also inequalities that will be enforced, such
-as requiring the total count of people in an enumeration district to
+invariants.  There are also inequalities that will be enforced. The E2E test 
+required the total count of people in an enumeration district to
 be greater or equal to the number of occupied households in that
 district.[@garfinkel2019end]
 
 _TopDown algorithm._ At a high level, the census approach to this
 challenge repeats two steps for multiple levels of a geographic
 hierarchy (from the top down, hence their name "TopDown"). The first
-step (Noisy Histogram) adds noise from a carefully chosen distribution
-to the data counts.  This produces a set of noisy counts. The noisy
-counts might have negative counts or violate invariants or other
-inequalities or be inconsistent with the counts one level up in the
-geographic hierarchy.  The second step (Optimize) adjusts the
-histogram to be close as possible to the noisy counts, subject to the
-constraints that all counts be non-negative and consistent with each
-other and the higher levels of the hierarchy, and satisfy the
-invariants and inequalities.  These two steps are performed for each
-geographic level, from the coarsest to the finest.  Each level is
-assigned a privacy budget $\epsilon_i$ (which governs how much noise
-to add in the Noisy Histogram step), and the entire algorithm achieves
-$\epsilon$-DP for $\epsilon=\sum_{i=1}^6 \epsilon_i$.  The 2020 US
-Census data will have six geographic levels, nested hierarchically:
-national, state, county, census tracts, block groups, and blocks; but
-in the 1940 E2E test, only national, state, county, and district
-levels were included.
+step (Imprecise Histogram) adds variation from a carefully chosen
+distribution to the stratified counts of individuals.  This produces a
+set of counts with illogical inconsistencies. For example, the
+imprecise histogram counts might be negative, violate
+invariants or other inequalities, or be inconsistent with the counts
+one level up in the geographic hierarchy.  The second step (Optimize)
+adjusts the histogram to be close as possible to the imprecise counts,
+subject to the constraints that all counts be non-negative,
+consistent with each other and the higher levels of the hierarchy, and
+satisfy the invariants and inequalities.  These two steps are
+performed for each geographic level, from the coarsest to the finest.
+Each level is assigned a privacy budget $\epsilon_i$ (which governs
+how much variation to add in the Imprecise Histogram step), and the entire
+algorithm achieves $\epsilon$-DP for $\epsilon=\sum_{i=1}^6
+\epsilon_i$.  The 2020 US Census data will have six geographic levels,
+nested hierarchically: national, state, county, census tracts, block
+groups, and blocks; but in the 1940 E2E test, only national, state,
+county, and district levels were included.
 
-### Step One: Noisy Histogram
+### Step One: Imprecise Histogram
 
 In the E2E algorithm applied to the 1940s microdata, TopDown added
-random noise in a flexible way that allowed the user to choose what
-statistics are the most important to keep accurate. The noise was
-added to the detailed histogram counts for the level and also to a
-preselected set of aggregate statistics.  Aggregate statistics are
-sets of histogram count sums specified by some characteristics. For
-example, the "ethnicity-age" aggregate statistic contains set of four
-counts: people of Hispanic ethnicity under age 18, of Hispanic
-ethnicity age 18 and over, of non-Hispanic ethnicity under age 18, and
-of non-Hispanic ethnicity age 18 and over.  The E2E test included two
-such aggregate statistics (internally called "DP queries"): a
-group-quarters query, which increases the accuracy of the count of
+random variation in a flexible way that allowed the user to choose
+what statistics are the most important to keep accurate. The variation
+was added to the detailed histogram counts for the level and also to a
+preselected set of aggregate statistics. The detailed histogram counts
+stratified the population of each geographic by age (two values:
+under-18-year-olds and 18-plus), race (six values), ethnicity (two
+values: hispanic and non-hispanic), and household/group-quarters type
+(6 values).  The aggregate statistics are sets of histogram count sums
+specified by some characteristics. For example, the "ethnicity-age"
+aggregate statistic contains set of four counts: people of Hispanic
+ethnicity under age 18, of Hispanic ethnicity age 18 and over, of
+non-Hispanic ethnicity under age 18, and of non-Hispanic ethnicity age
+18 and over.
+
+The aggregate statistics (internally called "DP queries") afford a way
+to choose specific statistics that are more important to keep
+accurate, and the E2E test included two such aggregates: a
+household/group-quarters query, which increases the accuracy of the count of
 each household type at each level of the hierarchy, and a
 race/ethnicity/age query, which increases the accuracy of the
 stratified counts of people by race, ethnicity, and voting age across
@@ -148,39 +159,39 @@ remaining 90% of the privacy budget, with 22.5% spent on the
 group-quarters queries and 67.5% spend on the race/ethnicity/age
 queries.
 
-The epsilon budget of the level governed how much total random noise
+The epsilon budget of the level governed how much total random variation
 to add. A further parameterization of the epsilon budget determined
-how the noise was allocated between the histogram counts and each type
+how the variance was allocated between the histogram counts and each type
 of aggregate statistic. We write $\epsilon_i = h + s_1 + s_2 + \ldots
 + s_k$, where $\epsilon_i$ was the budget for the geographic level,
 $h$ was the budget for the detailed queries, and $s_1, \dots s_k$ were
 the budgets for each of the $k$ types of aggregate statistics. Then
-noise was added independently to each count according to the follow
+variance was added independently to each count according to the follow
 distribution:
 $$
-\text{noisy detailed histogram count}
- = \text{true detailed histogram count} + G(h/2)
+\text{imprecise detailed histogram count}
+ = \text{precise detailed histogram count} + G(h/2)
 $$
-$$\text{noisy aggregate stat $j$}
- = \text{ true aggregate stat $j$} + G(s_j/2)
+$$\text{imprecise aggregate stat $j$}
+ = \text{ precise aggregate stat $j$} + G(s_j/2)
 $$
 where $G(z)$ denotes the two-tailed geometric distribution,
 $$
 \Pr[G(z)=k] = \frac{(1 - \exp(-z))\exp(-z|k|)}{1 + \exp(-z)}.
 $$
 
-The noisy counts and noisy aggregate statistics are unbiased estimates
+The imprecise counts and imprecise aggregate statistics are unbiased estimates
 with variance $(1-\exp(-z))^2/ (2 \exp(-z))$, where $z$ is the
-parameter for the geometric noise added. A higher privacy budget means
-the noise added is more concentrated around zero, and therefore the
+parameter for the geometric random variable added. A higher privacy budget means
+the variance added is more concentrated around zero, and therefore the
 corresponding statistic is more accurate. Therefore, adjusting the
 privacy budgets of the various aggregate statistics gives control over
 which statistics are the most private/least accurate (low fraction of
 the budget) and the most accurate/least private (high fraction of the
 budget).
 
-The noise added to each histogram count comes from the same
-distribution, and is independent of all other added noise; the noise
+The variation added to each histogram count comes from the same
+distribution, and is independent of all other added variation; the variance
 does not scale with the magnitude of count, e.g. adding 23 people to
 the count of age 18 and older non-Hispanic Whites is just as likely as
 adding 23 people to the count of age under 18 Hispanic Native
@@ -188,12 +199,13 @@ Americans, even though the population of the latter is smaller.
 
 ### Step Two: Optimize
 
-In this step, the synthetic data is created from the noisy data by
-optimizing a quadratic objective subject to a system of linear
-equations and inequalities. The algorithm creates a variable for each
-detailed histogram count and each aggregate statistic. It adds
-equations and inequalities to encode the requirements that (i) each
-count and aggregate statistic is non-negative, (ii) the invariants and
+In this step, the synthetic data is created from the imprecise
+detailed histogram counts and aggregate statistics by optimizing a
+quadratic objective function subject to a system of linear equations
+and inequalities. The algorithm creates a variable for each detailed
+histogram count and each aggregate statistic. It adds equations and
+inequalities to encode the requirements that (i) each count and
+aggregate statistic is non-negative, (ii) the invariants and
 inequalities are satisfied, (iii) the aggregate statistics are the sum
 of the corresponding detailed histogram counts, and (iv) the
 statistics are consistent with the higher level synthetic data counts
@@ -202,37 +214,51 @@ counties in a state is equal to the number of people aged 18 and over
 in that state as reported by synthetic data set constructed in the
 previous phase). The optimization step finds a solution that satisfies
 these equations and has the property that the value of each variable
-is as close as possible to the corresponding noisy detailed histogram
-count or noisy aggregate statistic. This is done in a way that favors
-closeness for the noisy values constructed by adding noise from a
-lower variance geometric distribution. The solution to this
-optimization is not necessarily integral, however, and TopDown uses a
-second optimization step to round fractional counts to integers.
+is as close as possible to the corresponding imprecise detailed
+histogram count or imprecise aggregate statistic. The solution
+minimizes a weighted sum of the squared differences between each precise
+and imprecise count, where each weight is proportional to the
+magnitude of the variation added in step one to create the imprecise
+count. The solution to this optimization is not necessarily integral,
+however, and TopDown uses a second optimization step to round
+fractional counts to integers.
+
 
 Empirical Privacy Loss for quantifying impact of optimize steps
 ---------------------------------------------------------------
 
-DP algorithms like TopDown are engineered to achieve a guaranteed
-maximum level of privacy loss (the $\epsilon$ in $\epsilon$-DP).
-However, the proof that TopDown has privacy loss bounded by $\epsilon$
-might have room for improvement.  It is possible to directly
-investigate privacy loss of any algorithm $\mathcal{A}$ by searching
-for databases $D$ and $D'$ that differ on a single row and an event
-$E$ that can serve as a witness to the gap between $\Pr[\mathcal{A}(D)
-\in E]$ and $\Pr[\mathcal{A}(D') \in E]$.  Estimating the ratio of
-these probabilities is straightforward, but computationally intensive,
-and searching the space of near-databases and events is also difficult
-to do in general.  This approach has been developed in prior work by
-Ding et al (2019).[ding2018detecting]
+As described above, the privacy loss of a DP algorithm is quantified
+by a unitless number, $\epsilon$, that bounds the maximum log of the
+relative change in the probability of an output when one person's data is
+changed.  This bound is typically proven by logical deduction , and
+for complex DP algorithms, the proof often relies on the Sequential
+Composition Theorem,[@dwork2014algorithmic] which states that
+information derived by combining the output of an $\epsilon_1$-DP
+algorithm and an $\epsilon_2$-DP algorithm is at most
+$(\epsilon_1+\epsilon_2)$-DP. This theorem is an inequality however, and
+the inequality might have room for improvement.
 
-Because of the special structure of count queries, there is a way to
-avoid re-running algorithm $\mathcal{A}$ repeatedly, which is
+It is possible to empirically quantify privacy loss, which has the
+potential to show that the inequality of the sequential composition
+theorem is not tight. The brute force approach quantify privacy loss
+empirically is to search over databases $D$ and $D'$ that differ on one row
+to find the event $E$ with the largest ratio of probabilities; this too
+computationally intensive to be feasible for all but the simplest DP
+algorithms.
+
+For algorithms that produce DP counts of multiple
+subpopulations, such as TopDown, it is possible to use the
+distribution of the residual difference between the precise count
+and the DP count to derive a proxy of the distribution produced by the
+brute force approach.[@flaxman2019empirical]
+The special structure of count queries affords a way to
+avoid re-running the algorithm repeatedly, which is
 essential for TopDown, since it takes several hours to complete a
 single run of the algorithm.  Assuming that the residual difference of
-the DP count minus the exact count is identically distributed for
+the DP count minus the precise count is identically distributed for
 queries across similar areas (such as voting-age population across all
-enumeration districts), then instead of focusing on only the histogram
-counts containing the individual who has changed, we could use the
+enumeration districts), and then instead of focusing on only the histogram
+counts containing the individual who has changed, we used the
 residuals for all areal units to estimate the probability of the event
 we are after:
 $$
