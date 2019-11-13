@@ -1,4 +1,4 @@
 *~
 *.pyc
-notebooks/.ipynb_checkpoints/
+*.ipynb_checkpoints/
 dp_2020_census.egg-info/
