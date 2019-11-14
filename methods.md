@@ -68,7 +68,7 @@ was added to the detailed histogram counts for the level and also to a
 preselected set of aggregate statistics. The detailed histogram counts
 stratified the population of each geographic by age (two values:
 under-18-year-olds and 18-plus), race (six values), ethnicity (two
-values: hispanic and non-hispanic), and household/group-quarters type
+values: Hispanic and non-Hispanic), and household/group-quarters type
 (6 values).  The aggregate statistics are sets of histogram count sums
 specified by some characteristics. For example, the "ethnicity-age"
 aggregate statistic contains set of four counts: people of Hispanic
@@ -194,9 +194,9 @@ has changed, we used the residuals for all areal units to estimate the
 probability of the event we are after:
 $$
 \Pr\left[\mathrm{error}_{j_1, j_2, \ldots, j_{J}}^D =k\right] \approx
-\bigg(\sum_{j_1'=1}^C\sum_{j_2'=1}^C\cdots\sum_{j_J'= 1}^C
+\left(\sum_{j_1'=1}^C\sum_{j_2'=1}^C\cdots\sum_{j_J'= 1}^C
 \mathbf{1}\left[\left\{\mathrm{error}_{j_1', j_2', \ldots, j_{J}'}^D =
-k\right\}\right]\bigg)\bigg/C^J =: \hat{p}_k,
+k\right\}\right]\right)\bigg/C^J =: \hat{p}_k,
 $$
 where $\mathrm{error}_{j_1, j_2, \ldots, j_{J}}^D$ is the residual
 difference of DP counts returned by TopDown minus the exact count for

@@ -64,10 +64,13 @@ application, but further work is warranted.
 This work fits into the beginning of a discussion on how to best
 balance privacy and accuracy in decennial census data collection, and
 there is a need for continued discussion.  This need must be balanced
-against a risky sort of observer bias---attitude surveys have found
-that calling attention to the privacy and confidentiality of census
-responses, even if done in a positive manner, reduces the willingness
-of respondents to answer census questions.[[ref]]
+against a risky sort of observer bias---some researchers have
+hypothesized that calling attention to the privacy and confidentiality
+of census responses, even if done in a positive manner, could reduce
+the willingness of respondents to answer census questions, and ongoing
+investigation with surveys and cognitive testing may provide some
+evidence on the magnitude of this effect as well as potential
+countermeasures.[@childs2019update]
 
 Limitations
 -----------

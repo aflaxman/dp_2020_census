@@ -1,7 +1,7 @@
 Differential privacy in the 2020 US census, what will it do? Quantifying the accuracy/privacy tradeoff
 ======================================================================================================
 
-Samantha Petti and Abraham D. Flaxman, 2019-11-13T09
+Samantha Petti and Abraham D. Flaxman, 2019-11-14T15
 
 
 Acronyms
@@ -35,7 +35,7 @@ decade.[@ruggles2019differential]
 The confidentiality of information in the decennial census is also
 required by law, and the 2020 US Census will use a novel approach to
 "disclosure avoidance" to protect respondents'
-data.[@abowd2018disclosure] This approach builds on Differential
+data.[@abowd2019disclosure] This approach builds on Differential
 Privacy, a mathematical definition of privacy that has been developed
 over the last decade and a half in the theoretical computer science
 and cryptography communities.[@dwork2014algorithmic] Although the new
@@ -54,7 +54,7 @@ disclosure avoidance system but the approach was applied to the 2018
 end-to-end (E2E) test of the decennial census, and computer code used
 for this test as well as accompanying exposition has recently been
 released publicly by the Census
-Bureau.[@abowd2018disclosure][@boyd2019differential]
+Bureau.[@abowd2019disclosure][@boyd2019differential]
 
 We used the recently released code, preprints, and data files to
 understand and quantify the error introduced by the E2E disclosure
@@ -136,7 +136,7 @@ was added to the detailed histogram counts for the level and also to a
 preselected set of aggregate statistics. The detailed histogram counts
 stratified the population of each geographic by age (two values:
 under-18-year-olds and 18-plus), race (six values), ethnicity (two
-values: hispanic and non-hispanic), and household/group-quarters type
+values: Hispanic and non-Hispanic), and household/group-quarters type
 (6 values).  The aggregate statistics are sets of histogram count sums
 specified by some characteristics. For example, the "ethnicity-age"
 aggregate statistic contains set of four counts: people of Hispanic
@@ -262,9 +262,9 @@ has changed, we used the residuals for all areal units to estimate the
 probability of the event we are after:
 $$
 \Pr\left[\mathrm{error}_{j_1, j_2, \ldots, j_{J}}^D =k\right] \approx
-\bigg(\sum_{j_1'=1}^C\sum_{j_2'=1}^C\cdots\sum_{j_J'= 1}^C
+\left(\sum_{j_1'=1}^C\sum_{j_2'=1}^C\cdots\sum_{j_J'= 1}^C
 \mathbf{1}\left[\left\{\mathrm{error}_{j_1', j_2', \ldots, j_{J}'}^D =
-k\right\}\right]\bigg)\bigg/C^J =: \hat{p}_k,
+k\right\}\right]\right)\bigg/C^J =: \hat{p}_k,
 $$
 where $\mathrm{error}_{j_1, j_2, \ldots, j_{J}}^D$ is the residual
 difference of DP counts returned by TopDown minus the exact count for
@@ -621,10 +621,13 @@ application, but further work is warranted.
 This work fits into the beginning of a discussion on how to best
 balance privacy and accuracy in decennial census data collection, and
 there is a need for continued discussion.  This need must be balanced
-against a risky sort of observer bias---attitude surveys have found
-that calling attention to the privacy and confidentiality of census
-responses, even if done in a positive manner, reduces the willingness
-of respondents to answer census questions.[[ref]]
+against a risky sort of observer bias---some researchers have
+hypothesized that calling attention to the privacy and confidentiality
+of census responses, even if done in a positive manner, could reduce
+the willingness of respondents to answer census questions, and ongoing
+investigation with surveys and cognitive testing may provide some
+evidence on the magnitude of this effect as well as potential
+countermeasures.[@childs2019update]
 
 Limitations
 -----------
@@ -678,7 +681,10 @@ such understanding.
 
 
 
-*Acknowledgements*: Thanks to Neil Marquez for suggesting comparing TopDown to simple random sampling.
+*Acknowledgements*: Thanks to Neil Marquez for suggesting comparing
+ TopDown to simple random sampling. Thanks to Simson Garfinkle and
+ Philip Leclerc for their helpful comments and discussion of this
+ work.
 
 
 References

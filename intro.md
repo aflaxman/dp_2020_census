@@ -35,7 +35,7 @@ decade.[@ruggles2019differential]
 The confidentiality of information in the decennial census is also
 required by law, and the 2020 US Census will use a novel approach to
 "disclosure avoidance" to protect respondents'
-data.[@abowd2018disclosure] This approach builds on Differential
+data.[@abowd2019disclosure] This approach builds on Differential
 Privacy, a mathematical definition of privacy that has been developed
 over the last decade and a half in the theoretical computer science
 and cryptography communities.[@dwork2014algorithmic] Although the new
@@ -54,7 +54,7 @@ disclosure avoidance system but the approach was applied to the 2018
 end-to-end (E2E) test of the decennial census, and computer code used
 for this test as well as accompanying exposition has recently been
 released publicly by the Census
-Bureau.[@abowd2018disclosure][@boyd2019differential]
+Bureau.[@abowd2019disclosure][@boyd2019differential]
 
 We used the recently released code, preprints, and data files to
 understand and quantify the error introduced by the E2E disclosure
