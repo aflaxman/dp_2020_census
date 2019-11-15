@@ -1,7 +1,7 @@
 Differential privacy in the 2020 US census, what will it do? Quantifying the accuracy/privacy tradeoff
 ======================================================================================================
 
-Samantha Petti and Abraham D. Flaxman, 2019-11-14T15
+Samantha Petti and Abraham D. Flaxman, 2019-11-15T14
 
 
 Acronyms
