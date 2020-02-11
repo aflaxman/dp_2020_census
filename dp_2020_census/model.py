@@ -63,6 +63,8 @@ def empirical_privacy_loss(error, bandwidth=0.1, est_range_percentile=99, est_ra
     returns pd.DataFrame of EPL and histogram, as well as smoothed versions
 
     """
+    if len(error) == 0:
+        return pd.DataFrame(columns=['hist', 'epl_hist', 'epl_cusum', 'smooth_hist', 'smooth_epl'])
 
     lb = np.percentile(error, 100-est_range_percentile)
     ub = np.percentile(error, est_range_percentile)
@@ -82,10 +84,10 @@ def empirical_privacy_loss(error, bandwidth=0.1, est_range_percentile=99, est_ra
     ccusum = f_empirical.sum() - np.cumsum(f_empirical)
     df['epl_cusum'] = np.log(ccusum[1:] / ccusum[:-1])
 
-    if np.allclose(all_errors, 0):
-        # can't do kde of all zeros
-        df['smooth_hist'] = np.nan * np.ones_like(bin_edges[:-1])
-        df['smooth_epl'] = np.inf * np.ones_like(bin_edges[:-1])
+    if np.allclose(all_errors.std(), 0):
+        # can't do kde of all same thing
+        df['smooth_hist'] = np.nan
+        df['smooth_epl'] = np.inf
     else:
         kernel = scipy.stats.gaussian_kde(all_errors, bw_method=bandwidth)
         f_smoothed = N*kernel(.5 * (bin_edges[:-1] + bin_edges[1:]))
