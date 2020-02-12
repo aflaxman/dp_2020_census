@@ -8,69 +8,71 @@ Error and Privacy of TopDown
 Recall that geographic areas are nested: enumeration districts are
 contained within counties, which are contained within states. We found
 error in total count (TC) varied as a function of total privacy loss
-budget. Running TopDown with $\epsilon = 0.25$ produced median
-absolute error in TC of {tc_enum_dist_0_25_mae} at the enumeration
-district level and {tc_county_0_25_mae} at the county level; $\epsilon
+budget. Running TopDown with $\epsilon = 0.5$ produced median
+absolute error in TC of {tc_enum_dist_0_50_mae} at the enumeration
+district level and {tc_county_0_50_mae} at the county level; $\epsilon
 = 1.0$ produced median absolute error in TC of {tc_enum_dist_1_0_mae}
 at the enumeration district level and {tc_county_1_0_mae} at the
-county level; and $\epsilon = 4.0$ produced median absolute error in
-TC of {tc_enum_dist_4_0_mae} at the enumeration district level and
-{tc_county_4_0_mae} at the county level (Full table in Supplementary
-Appendix 1).  At the state level, there was TC error of $0.0$, as
+county level; and $\epsilon = 2.0$ produced median absolute error in
+TC of {tc_enum_dist_2_0_mae} at the enumeration district level and
+{tc_county_2_0_mae} at the county level (Full table in Extended
+Data).  At the state level, there was TC error of $0.0$, as
 expected from the state TC invariant.  The median and 95th percentile
-of TC were {tc_enum_dist_count_median} and {tc_enum_dist_count_pct95}
+of TC from the precise-count data were {tc_enum_dist_count_median} and {tc_enum_dist_count_pct95}
 for enumeration districts, {tc_county_count_median} and
 {tc_county_count_pct95} for counties, and {tc_state_count_median} and
 {tc_state_count_pct95} for states.
 
-Error in stratified count (SC) varied similarly; When $\epsilon =
-0.25$, the median absolute error in SC at the enumeration district
-level was {sc_enum_dist_0_25_mae} people, at the county level was
-{sc_county_0_25_mae} people, and at the state level was
-{sc_state_0_25_mae} people; for $\epsilon = 1.0$, the median absolute
+Error in stratified count (SC) varied similarly; when $\epsilon =
+0.5$, the median absolute error in SC at the enumeration district
+level was {sc_enum_dist_0_50_mae} people, at the county level was
+{sc_county_0_50_mae} people, and at the state level was
+{sc_state_0_50_mae} people; for $\epsilon = 1.0$, the median absolute
 error in SC at the enumeration district level was
 {sc_enum_dist_1_0_mae} people, at the county level was
 {sc_county_1_0_mae} people, and at the state level was
-{sc_state_1_0_mae} people; and for $\epsilon = 4.00$, the median
+{sc_state_1_0_mae} people; and for $\epsilon = 2.0$, the median
 absolute error in SC at the enumeration district level was
-{sc_enum_dist_4_0_mae} people, at the county level was
-{sc_county_4_0_mae} people, and at the state level was
-{sc_state_4_0_mae} people. The median and 95th percentile of SC were
+{sc_enum_dist_2_0_mae} people, at the county level was
+{sc_county_2_0_mae} people, and at the state level was
+{sc_state_2_0_mae} people. The median and 95th percentile of SC 
+from the precise-count data were
 {sc_enum_dist_count_median} and {sc_enum_dist_count_pct95} for
 enumeration districts, {sc_county_count_median} and
 {sc_county_count_pct95} for counties, and {sc_state_count_median} and
 {sc_state_count_pct95} for states.  (Figure 1)
 
 We found that the empirical privacy loss was often substantially
-smaller than the privacy loss budget.  For $\epsilon = 0.25$, the
+smaller than the privacy loss budget.  For $\epsilon = 0.5$, the
 empirical privacy loss for TC at the enumeration district level was
-{tc_privacy_loss_enum_dist_0_25_max_abs} and at the county level was
-{tc_privacy_loss_county_0_25_max_abs} (at the state level empirical
+{tc_privacy_loss_enum_dist_0_50_max_abs} and at the county level was
+{tc_privacy_loss_county_0_50_max_abs} (at the state level empirical
 privacy loss is undefined, since the invariant makes all residuals
 zero); for $\epsilon = 1.0$, the empirical privacy loss for TC at the
 enumeration district level was {tc_privacy_loss_enum_dist_1_0_max_abs}
 and at the county level was {tc_privacy_loss_county_1_0_max_abs}; and
-for $\epsilon = 4.0$, the empirical privacy loss for TC at the
-enumeration district level was {tc_privacy_loss_enum_dist_4_0_max_abs}
-and at the county level was {tc_privacy_loss_county_4_0_max_abs}.
+for $\epsilon = 2.0$, the empirical privacy loss for TC at the
+enumeration district level was {tc_privacy_loss_enum_dist_2_0_max_abs}
+and at the county level was {tc_privacy_loss_county_2_0_max_abs}.
 
 This relationship between privacy loss budget and empirical privacy
 loss was similar for stratified counts (SC) at the enumeration
 district and county level, but for privacy loss budgets of 1.0 and
 less, the empirical privacy at the enumeration district level was loss
-for SC was not as responsive to $\epsilon$.  For $\epsilon = 0.25$,
+for SC was not as responsive to $\epsilon$.  For $\epsilon = 0.5$,
 the empirical privacy loss for SC at the enumeration district level
-was {sc_privacy_loss_enum_dist_0_25_max_abs}, at the county level was
-{sc_privacy_loss_county_0_25_max_abs}, and at the state level was
-{sc_privacy_loss_state_0_25_max_abs}; for $\epsilon = 1.0$, the
+was {sc_privacy_loss_enum_dist_0_50_max_abs}, at the county level was
+{sc_privacy_loss_county_0_50_max_abs}, and at the state level was
+{sc_privacy_loss_state_0_50_max_abs}; for $\epsilon = 1.0$, the
 empirical privacy loss for SC at the enumeration district level was
 {sc_privacy_loss_enum_dist_1_0_max_abs}, at the county level was
 {sc_privacy_loss_county_1_0_max_abs}, and at the state level was
-{sc_privacy_loss_state_1_0_max_abs}; and for $\epsilon = 4.0$, the
+{sc_privacy_loss_state_1_0_max_abs}; and for $\epsilon = 2.0$, the
 empirical privacy loss for SC at the enumeration district level was
-{sc_privacy_loss_enum_dist_4_0_max_abs}, at the county level was
-{sc_privacy_loss_county_4_0_max_abs}, and at the state level was
-{sc_privacy_loss_state_4_0_max_abs}.
+{sc_privacy_loss_enum_dist_2_0_max_abs}, at the county level was
+{sc_privacy_loss_county_2_0_max_abs}, and at the state level was
+{sc_privacy_loss_state_2_0_max_abs}. A table of EPL values for all
+combinations of  and all geographic levels is included as extended data.
 
 ![](fig_1_hist_epl.png "Figure 1 Error Histogram and Empirical Privacy
  Loss Function")
@@ -159,23 +161,23 @@ precise count, while enumeration districts homogeneity index 22 (the
 maximum number of empty cells observed in the detailed histogram) had
 TC systematically higher than the precise count.  The size of this
 bias decreased as a function of $\epsilon$.  Homogeneity index 0 had
-bias of {tc_enum_dist_0_25_0_bias} people for $\epsilon = 0.25$,
+bias of {tc_enum_dist_0_50_0_bias} people for $\epsilon = 0.5$,
 {tc_enum_dist_1_0_0_bias} people for $\epsilon = 1.0$, and
-{tc_enum_dist_4_0_0_bias} people for $\epsilon = 4.0$; while
-homogeneity index 22 had bias of {tc_enum_dist_0_25_22_bias} people
-for $\epsilon = 0.25$, {tc_enum_dist_1_0_22_bias} people for $\epsilon
-= 1.0$, and {tc_enum_dist_4_0_22_bias} people for $\epsilon = 4.0$.
+{tc_enum_dist_2_0_0_bias} people for $\epsilon = 2.0$; while
+homogeneity index 22 had bias of {tc_enum_dist_0_50_22_bias} people
+for $\epsilon = 0.5$, {tc_enum_dist_1_0_22_bias} people for $\epsilon
+= 1.0$, and {tc_enum_dist_2_0_22_bias} people for $\epsilon = 2.0$.
 
 Counties displayed the same general pattern, but there are fewer
 counties and they typically have less empty strata, so it was not as
 pronounced.  The size of this bias again decreased as a function of
-$\epsilon$.  Homogeneity index 0 had bias of {tc_county_0_25_0_bias}
-people for $\epsilon = 0.25$, {tc_county_1_0_0_bias} people for
-$\epsilon = 1.0$, and {tc_county_4_0_0_bias} people for $\epsilon =
-4.0$; while homogeneity index 22 had bias of {tc_county_0_25_22_bias}
-people for $\epsilon = 0.25$, {tc_county_1_0_22_bias} people for
-$\epsilon = 1.0$, and {tc_county_4_0_22_bias} people for $\epsilon =
-4.0$.  (Figure 3)
+$\epsilon$.  Homogeneity index 0 had bias of {tc_county_0_50_0_bias}
+people for $\epsilon = 0.5$, {tc_county_1_0_0_bias} people for
+$\epsilon = 1.0$, and {tc_county_2_0_0_bias} people for $\epsilon =
+2.0$; while homogeneity index 22 had bias of {tc_county_0_50_22_bias}
+people for $\epsilon = 0.5$, {tc_county_1_0_22_bias} people for
+$\epsilon = 1.0$, and {tc_county_2_0_22_bias} people for $\epsilon =
+2.0$.  (Figure 3)
 
 ![](fig_3_homogeneity_bias.png "Figure 3 Homogeneity Bias")
 

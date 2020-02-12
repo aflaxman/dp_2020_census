@@ -1,7 +1,7 @@
 Differential privacy in the 2020 US census, what will it do? Quantifying the accuracy/privacy tradeoff
 ======================================================================================================
 
-Samantha Petti and Abraham D. Flaxman, 2019-11-15T14
+Samantha Petti and Abraham D. Flaxman, 2020-02-12T06
 
 
 Acronyms
@@ -374,69 +374,71 @@ Error and Privacy of TopDown
 Recall that geographic areas are nested: enumeration districts are
 contained within counties, which are contained within states. We found
 error in total count (TC) varied as a function of total privacy loss
-budget. Running TopDown with $\epsilon = 0.25$ produced median
-absolute error in TC of 56 at the enumeration
-district level and 81 at the county level; $\epsilon
+budget. Running TopDown with $\epsilon = 0.5$ produced median
+absolute error in TC of 29 at the enumeration
+district level and 45 at the county level; $\epsilon
 = 1.0$ produced median absolute error in TC of 15
 at the enumeration district level and 24 at the
-county level; and $\epsilon = 4.0$ produced median absolute error in
-TC of 4 at the enumeration district level and
-7 at the county level (Full table in Supplementary
-Appendix 1).  At the state level, there was TC error of $0.0$, as
+county level; and $\epsilon = 2.0$ produced median absolute error in
+TC of 8 at the enumeration district level and
+13 at the county level (Full table in Extended
+Data).  At the state level, there was TC error of $0.0$, as
 expected from the state TC invariant.  The median and 95th percentile
-of TC were 865 and 2342
+of TC from the precise-count data were 865 and 2342
 for enumeration districts, 18679 and
 122710 for counties, and 1903133 and
 7419040 for states.
 
-Error in stratified count (SC) varied similarly; When $\epsilon =
-0.25$, the median absolute error in SC at the enumeration district
-level was 17 people, at the county level was
-16 people, and at the state level was
-18 people; for $\epsilon = 1.0$, the median absolute
+Error in stratified count (SC) varied similarly; when $\epsilon =
+0.5$, the median absolute error in SC at the enumeration district
+level was 10 people, at the county level was
+11 people, and at the state level was
+13 people; for $\epsilon = 1.0$, the median absolute
 error in SC at the enumeration district level was
 6 people, at the county level was
 6 people, and at the state level was
-7 people; and for $\epsilon = 4.00$, the median
+7 people; and for $\epsilon = 2.0$, the median
 absolute error in SC at the enumeration district level was
-2 people, at the county level was
-2 people, and at the state level was
-2 people. The median and 95th percentile of SC were
+4 people, at the county level was
+4 people, and at the state level was
+4 people. The median and 95th percentile of SC 
+from the precise-count data were
 88 and 967 for
 enumeration districts, 47 and
 17480 for counties, and 229 and
 714208 for states.  (Figure 1)
 
 We found that the empirical privacy loss was often substantially
-smaller than the privacy loss budget.  For $\epsilon = 0.25$, the
+smaller than the privacy loss budget.  For $\epsilon = 0.5$, the
 empirical privacy loss for TC at the enumeration district level was
-0.024 and at the county level was
-0.031 (at the state level empirical
+0.046 and at the county level was
+0.042 (at the state level empirical
 privacy loss is undefined, since the invariant makes all residuals
 zero); for $\epsilon = 1.0$, the empirical privacy loss for TC at the
 enumeration district level was 0.085
 and at the county level was 0.081; and
-for $\epsilon = 4.0$, the empirical privacy loss for TC at the
-enumeration district level was 0.304
-and at the county level was 0.275.
+for $\epsilon = 2.0$, the empirical privacy loss for TC at the
+enumeration district level was 0.157
+and at the county level was 0.130.
 
 This relationship between privacy loss budget and empirical privacy
 loss was similar for stratified counts (SC) at the enumeration
 district and county level, but for privacy loss budgets of 1.0 and
 less, the empirical privacy at the enumeration district level was loss
-for SC was not as responsive to $\epsilon$.  For $\epsilon = 0.25$,
+for SC was not as responsive to $\epsilon$.  For $\epsilon = 0.5$,
 the empirical privacy loss for SC at the enumeration district level
-was 0.288, at the county level was
-0.129, and at the state level was
-0.067; for $\epsilon = 1.0$, the
+was 0.393, at the county level was
+0.168, and at the state level was
+0.085; for $\epsilon = 1.0$, the
 empirical privacy loss for SC at the enumeration district level was
 0.488, at the county level was
 0.166, and at the state level was
-0.141; and for $\epsilon = 4.0$, the
+0.141; and for $\epsilon = 2.0$, the
 empirical privacy loss for SC at the enumeration district level was
-0.450, at the county level was
-0.460, and at the state level was
-0.531.
+0.715, at the county level was
+0.262, and at the state level was
+0.270. A table of EPL values for all
+combinations of  and all geographic levels is included as extended data.
 
 ![](fig_1_hist_epl.png "Figure 1 Error Histogram and Empirical Privacy
  Loss Function")
@@ -525,23 +527,23 @@ precise count, while enumeration districts homogeneity index 22 (the
 maximum number of empty cells observed in the detailed histogram) had
 TC systematically higher than the precise count.  The size of this
 bias decreased as a function of $\epsilon$.  Homogeneity index 0 had
-bias of -52.6 people for $\epsilon = 0.25$,
+bias of -31.7 people for $\epsilon = 0.5$,
 -18.9 people for $\epsilon = 1.0$, and
--6.6 people for $\epsilon = 4.0$; while
-homogeneity index 22 had bias of 8.7 people
-for $\epsilon = 0.25$, 3.6 people for $\epsilon
-= 1.0$, and 1.5 people for $\epsilon = 4.0$.
+-11.6 people for $\epsilon = 2.0$; while
+homogeneity index 22 had bias of 5.4 people
+for $\epsilon = 0.5$, 3.6 people for $\epsilon
+= 1.0$, and 2.3 people for $\epsilon = 2.0$.
 
 Counties displayed the same general pattern, but there are fewer
 counties and they typically have less empty strata, so it was not as
 pronounced.  The size of this bias again decreased as a function of
-$\epsilon$.  Homogeneity index 0 had bias of -103.7
-people for $\epsilon = 0.25$, -33.9 people for
-$\epsilon = 1.0$, and -10.4 people for $\epsilon =
-4.0$; while homogeneity index 22 had bias of 23.4
-people for $\epsilon = 0.25$, 14.5 people for
-$\epsilon = 1.0$, and 6.0 people for $\epsilon =
-4.0$.  (Figure 3)
+$\epsilon$.  Homogeneity index 0 had bias of -59.2
+people for $\epsilon = 0.5$, -33.9 people for
+$\epsilon = 1.0$, and -18.8 people for $\epsilon =
+2.0$; while homogeneity index 22 had bias of 21.7
+people for $\epsilon = 0.5$, 14.5 people for
+$\epsilon = 1.0$, and 11.1 people for $\epsilon =
+2.0$.  (Figure 3)
 
 ![](fig_3_homogeneity_bias.png "Figure 3 Homogeneity Bias")
 
@@ -682,7 +684,7 @@ such understanding.
 
 
 *Acknowledgements*: Thanks to Neil Marquez for suggesting comparing
- TopDown to simple random sampling. Thanks to Simson Garfinkle and
+ TopDown to simple random sampling. Thanks to Simson Garfinkel and
  Philip Leclerc for their helpful comments and discussion of this
  work.
 
