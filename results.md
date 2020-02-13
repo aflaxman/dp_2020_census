@@ -2,7 +2,7 @@
 Results
 =======
 
-Error and Privacy of TopDown
+Error and privacy of TopDown
 ----------------------------
 
 Recall that geographic areas are nested: enumeration districts are
@@ -71,8 +71,9 @@ empirical privacy loss for SC at the enumeration district level was
 empirical privacy loss for SC at the enumeration district level was
 {sc_privacy_loss_enum_dist_2_0_max_abs}, at the county level was
 {sc_privacy_loss_county_2_0_max_abs}, and at the state level was
-{sc_privacy_loss_state_2_0_max_abs}. A table of EPL values for all
-combinations of  and all geographic levels is included as extended data.
+{sc_privacy_loss_state_2_0_max_abs}. EPL values for all
+combinations of $\epsilon$ and all geographic levels appear in the
+Extended Data.
 
 ![](fig_1_hist_epl.png "Figure 1 Error Histogram and Empirical Privacy
  Loss Function")

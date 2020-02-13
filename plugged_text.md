@@ -1,7 +1,7 @@
 Differential privacy in the 2020 US census, what will it do? Quantifying the accuracy/privacy tradeoff
 ======================================================================================================
 
-Samantha Petti and Abraham D. Flaxman, 2020-02-12T06
+Samantha Petti and Abraham D. Flaxman, 2020-02-13T14
 
 
 Acronyms
@@ -368,7 +368,7 @@ Our Evaluation Approach
 Results
 =======
 
-Error and Privacy of TopDown
+Error and privacy of TopDown
 ----------------------------
 
 Recall that geographic areas are nested: enumeration districts are
@@ -411,15 +411,15 @@ enumeration districts, 47 and
 We found that the empirical privacy loss was often substantially
 smaller than the privacy loss budget.  For $\epsilon = 0.5$, the
 empirical privacy loss for TC at the enumeration district level was
-0.046 and at the county level was
-0.042 (at the state level empirical
+0.033 and at the county level was
+0.035 (at the state level empirical
 privacy loss is undefined, since the invariant makes all residuals
 zero); for $\epsilon = 1.0$, the empirical privacy loss for TC at the
-enumeration district level was 0.085
-and at the county level was 0.081; and
+enumeration district level was 0.064
+and at the county level was 0.048; and
 for $\epsilon = 2.0$, the empirical privacy loss for TC at the
-enumeration district level was 0.157
-and at the county level was 0.130.
+enumeration district level was 0.116
+and at the county level was 0.094.
 
 This relationship between privacy loss budget and empirical privacy
 loss was similar for stratified counts (SC) at the enumeration
@@ -427,18 +427,19 @@ district and county level, but for privacy loss budgets of 1.0 and
 less, the empirical privacy at the enumeration district level was loss
 for SC was not as responsive to $\epsilon$.  For $\epsilon = 0.5$,
 the empirical privacy loss for SC at the enumeration district level
-was 0.393, at the county level was
-0.168, and at the state level was
-0.085; for $\epsilon = 1.0$, the
+was 0.200, at the county level was
+0.165, and at the state level was
+0.104; for $\epsilon = 1.0$, the
 empirical privacy loss for SC at the enumeration district level was
-0.488, at the county level was
-0.166, and at the state level was
-0.141; and for $\epsilon = 2.0$, the
+0.241, at the county level was
+0.164, and at the state level was
+0.166; and for $\epsilon = 2.0$, the
 empirical privacy loss for SC at the enumeration district level was
-0.715, at the county level was
-0.262, and at the state level was
-0.270. A table of EPL values for all
-combinations of  and all geographic levels is included as extended data.
+0.280, at the county level was
+0.253, and at the state level was
+0.300. EPL values for all
+combinations of $\epsilon$ and all geographic levels appear in the
+Extended Data.
 
 ![](fig_1_hist_epl.png "Figure 1 Error Histogram and Empirical Privacy
  Loss Function")
