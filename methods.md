@@ -155,6 +155,11 @@ count. The solution to this optimization is not necessarily integral,
 however, and TopDown uses a second optimization step to round
 fractional counts to integers.
 
+We note that the approach that Census Bureau has taken with the
+TopDown where imprecise histogram data is optimized based on internal
+consistency has been developed in a line of research over the last
+decade to that has focused on obtaining count data that is DP _and_
+accurate.[@hay2010boosting, @li2015matrix, @kuo2018differentially, @fioretto2019differential]
 
 Empirical Privacy Loss for quantifying impact of optimize steps
 ---------------------------------------------------------------

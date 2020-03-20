@@ -96,3 +96,21 @@ def empirical_privacy_loss(error, bandwidth=0.1, est_range_percentile=99, est_ra
         df['smooth_epl'] = np.log(ratio)
     return df
 
+def GDPC(epsilon, exact_counts):
+    """ add Geometric noise, to make counts differentially private
+    Parameters
+    ----------
+    epsilon : float-able
+    exact_counts : pd.Series
+    
+    Results
+    -------
+    returns dp_counts, a pd.Series with index matching exact_counts
+    """
+    
+    z = float(epsilon)
+
+    all_errors = (np.random.geometric(z, size=len(exact_counts))
+                    - np.random.geometric(z, size=len(exact_counts)))
+    dp_counts = exact_counts + all_errors
+    return dp_counts

@@ -1,7 +1,7 @@
 Differential privacy in the 2020 US census, what will it do? Quantifying the accuracy/privacy tradeoff
 ======================================================================================================
 
-Samantha Petti and Abraham D. Flaxman, 2020-02-13T14
+Samantha Petti and Abraham D. Flaxman, 2020-03-10T16
 
 
 Acronyms
@@ -223,6 +223,11 @@ count. The solution to this optimization is not necessarily integral,
 however, and TopDown uses a second optimization step to round
 fractional counts to integers.
 
+We note that the approach that Census Bureau has taken with the
+TopDown where imprecise histogram data is optimized based on internal
+consistency has been developed in a line of research over the last
+decade to that has focused on obtaining count data that is DP _and_
+accurate.[@hay2010boosting, @li2015matrix, @kuo2018differentially, @fioretto2019differential]
 
 Empirical Privacy Loss for quantifying impact of optimize steps
 ---------------------------------------------------------------
@@ -479,18 +484,18 @@ and 9 at the state level.
 
 We found empirical privacy loss increased as sample size increased.
 For a 5% sample, at the enumeration district level, we found EPL of
-0.020 for TC and
+0.011 for TC and
 0.098 for SC, and at the county
-level, we found 0.035 for TC and
+level, we found 0.003 for TC and
 0.034 for SC; a 50% sample produced
-EPL of 0.079 for TC and
+EPL of 0.050 for TC and
 0.318 for SC at the enumeration
-district level, and 0.082 for TC and
+district level, and 0.013 for TC and
 0.150 for SC at the county level; and
-a 95% sample produced EPL of 0.314
-for TC and 1.333 for SC at the
-enumeration district level, and 0.429
-for TC and 0.612 for SC at the county
+a 95% sample produced EPL of 0.215
+for TC and 1.307 for SC at the
+enumeration district level, and 0.063
+for TC and 0.611 for SC at the county
 level.  (Figure 2)
 
 ![](fig_2_td_vs_srs.png "Figure 2 TopDown and Simple Random Sample")
